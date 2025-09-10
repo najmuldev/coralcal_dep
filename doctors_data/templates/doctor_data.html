@@ -29,10 +29,27 @@
               <input type="text" id="dr_name" name="dr_name" maxlength="100" class="input" required placeholder="Enter Professional Name" />
             </div>
 
-            <div class="form-item">
+            <!-- <div class="form-item">
               <label class="label" for="dr_speciality">Speciality</label>
               <input type="text" id="dr_speciality" name="dr_speciality" maxlength="255" class="input" required placeholder="Enter Speciality : Medicine, Surgery, etc." />
+            </div> -->
+
+            <div class="form-item">
+              <label class="label">Speciality</label>
+              <div>
+                <label>
+                  <input type="radio" name="dr_speciality" value="Gynecologists" required>
+                  Gynecologists
+                </label>
+              </div>
+              <div>
+                <label>
+                  <input type="radio" name="dr_speciality" value="Orthopedics" required>
+                  Orthopedics
+                </label>
+              </div>
             </div>
+
 
             <div class="form-item">
               <label class="label" for="dr_designation">Designation</label>
@@ -264,7 +281,8 @@ function submitForm(event) {
   event.preventDefault();
   const drId = document.getElementById('dr_id').value.trim();
   const drName = document.getElementById('dr_name').value.trim();
-  const drSpecialty = document.getElementById('dr_speciality').value.trim();
+  // const drSpecialty = document.getElementById('dr_speciality').value.trim();
+  const drSpecialty = document.querySelector('input[name="dr_speciality"]:checked');
   const drDesignation = document.getElementById('dr_designation').value.trim();
 
   const chamberAddresses = document.querySelectorAll('[name="chamber_address[]"]');
