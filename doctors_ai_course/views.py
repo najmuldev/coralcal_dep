@@ -98,3 +98,23 @@ def edit_dac_form(request):
             messages.error(request, f"Error saving doctor: {str(e)}")
             return render(request, 'dac_form.html', {'doctor': doctor})
     return render(request, 'dac_form.html', {'doctor': doctor})
+
+@login_required
+def delete_dac(request,territory):
+    try:
+        territory = Territory.objects.get(territory=territory)
+    except Exception as e:
+        messages.error(request, f"Error getting territory: {str(e)}")
+        return redirect('doctors_ai_course')
+    try:
+        doctor = DoctorAiCourse.objects.get(territory = territory)
+    except Exception as e:
+        messages.error(request, f"Error getting doctor: {str(e)}")
+        return redirect('doctors_ai_course')
+    try:
+        doctor.delete()
+        messages.success(request, "Doctor deleted successfully!")
+        return redirect('doctors_ai_course')
+    except Exception as e:
+        messages.error(request, f"Error deleting doctor: {str(e)}")
+        return redirect('doctors_ai_course')
