@@ -17,6 +17,7 @@ from doctors_opinion.models import DoctorOpinion
 from openpyxl.styles import Alignment
 from doctors_data.models import Doctor, Chamber
 from . import utils
+from doctors_ai_course.models import DoctorAiCourse
 
 # Create your views here.
 @login_required
@@ -510,4 +511,46 @@ def doctors_data_export(request):
     wb.save(response)
     return response
 
-       
+
+@login_required
+def doctors_ai_course(request):
+    if request.method == 'GET':
+        # Get query params with default values
+        search_query = request.GET.get('search_query', '')
+        sort = request.GET.get('sort', 'dr_id')
+        direction = request.GET.get('direction', 'asc')
+        per_page = int(request.GET.get('per_page', 10))
+        page_number = int(request.GET.get('page_number', 1))
+        # Base queryset
+        data = DoctorAiCourse.objects.all()
+        if search_query:
+            data = data.filter(
+                Q(rpl_id__icontains=search_query) |
+                Q(name__icontains=search_query) |
+                Q(specialty__icontains=search_query) |
+                Q(designation__icontains=search_query)
+            )
+        sort_by = {
+            "dr_id": "rpl_id",
+            "dr_name": "name"
+        }.get(sort, sort)
+        if direction == "desc":
+            sort_by = f"-{sort_by}"    
+        data = data.order_by(sort_by)
+        # Pagination
+        paginator = Paginator(data, per_page)
+        page_obj = paginator.get_page(page_number)
+
+
+        # Pass context to template
+        context = {
+            'data': page_obj,
+            'search_query': search_query,
+            'sort': sort,
+            'direction': direction,
+            'per_page': per_page,
+            'page_number': page_number,
+            'total_pages': paginator.num_pages,
+        }
+
+        return render(request, 'doctors_ai_course.html', context)
