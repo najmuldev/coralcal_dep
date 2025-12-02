@@ -4,6 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import DoctorAiCourse
 from core.models import Territory
+from django.db.models import Q
+import openpyxl
+from django.http import HttpResponse
 
 # Create your views here.
 def dac_form(request):
@@ -118,3 +121,35 @@ def delete_dac(request,territory):
     except Exception as e:
         messages.error(request, f"Error deleting doctor: {str(e)}")
         return redirect('doctors_ai_course')
+    
+@login_required
+def export_dac(request):
+    wb = openpyxl.Workbook()
+
+    # --- Sheet 1: Doctors ---
+    ws_doctors = wb.active
+    ws_doctors.title = "Doctors"
+    ws_doctors.append(['RPL ID', 'Name', 'Speciality', 'Designation'])
+    search_query = request.GET.get('search_query', '')
+
+    data = DoctorAiCourse.objects.all()
+    if search_query:
+            data = data.filter(
+                Q(rpl_id__icontains=search_query) |
+                Q(name__icontains=search_query) |
+                Q(specialty__icontains=search_query) |
+                Q(designation__icontains=search_query)
+            )
+    for doc in data:
+        ws_doctors.append([doc.rpl_id, doc.name, doc.specialty, doc.designation])
+
+   
+
+    # Set response
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename=ai_for_doctors.xlsx'
+    wb.save(response)
+    return response
+
