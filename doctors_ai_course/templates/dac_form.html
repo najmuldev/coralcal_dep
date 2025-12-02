@@ -9,9 +9,15 @@
       <h2 class="text-sm sm:text-base md:text-lg font-bold text-primary">
         AI for Doctors.
       </h2>
+      {% if request.user.is_superuser %}
+      <a href="{% url 'doctors_ai_course' %}" class="button button--sm button--primary">
+        <i data-lucide="arrow-left"></i> Back
+      </a>
+      {% else %}
       <a href="{% url 'home' %}" class="button button--sm button--primary">
         <i data-lucide="arrow-left"></i> Back
       </a>
+      {% endif %}
     </div>
 
     <div id="main-container" class="border border-border p-6 rounded-md bg-white">
