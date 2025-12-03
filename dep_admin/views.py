@@ -18,6 +18,9 @@ from openpyxl.styles import Alignment
 from doctors_data.models import Doctor, Chamber
 from . import utils
 from doctors_ai_course.models import DoctorAiCourse
+import tempfile
+import os
+from django.core.management import call_command
 
 # Create your views here.
 @login_required
@@ -540,3 +543,43 @@ def doctors_ai_course(request):
         }
 
         return render(request, 'doctors_ai_course.html', context)
+  
+@login_required  
+def territory_upload(request):
+    if request.method == 'POST':
+        if 'territory_file' in request.FILES:
+            territory_file = request.FILES['territory_file']
+            # check file type excel or not.
+            if not territory_file.name.endswith(('.xlsx', '.xls')):
+                messages.error(request, "Please upload an Excel file.")
+                return redirect('territory_upload')
+            
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp_file:
+                    for chunk in territory_file.chunks():
+                        tmp_file.write(chunk)
+                    tmp_path = tmp_file.name
+                    
+            try:
+                # Call your existing management command
+                call_command(
+                    'add_territories', 
+                    file_path=tmp_path
+                )
+            except Exception as e:
+                messages.error(request, f"Error processing file: {str(e)}")
+                return redirect('territory_upload')
+            finally:
+                # Always clean up temp file
+                if os.path.exists(tmp_path):
+                    os.unlink(tmp_path)
+            try:
+                call_command(
+                    'create_users'
+                )
+                messages.success(request, "Territories added successfully! Users Sync Successfully!")
+            except Exception as e:
+                messages.error(request, f"Error processing user creation: {str(e)}")
+            return redirect('territory_upload')
+        else:
+            messages.error(request, "Please select a file.")
+    return render(request, 'territory_upload.html')

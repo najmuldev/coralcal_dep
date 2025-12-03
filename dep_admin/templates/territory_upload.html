@@ -1,0 +1,193 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block dashboard %}
+<div class="xl:container xl:mx-auto px-4 py-6">
+
+  <!-- Welcome Header -->
+  <div class="mb-8 max-w-4xl mx-auto">
+    <h1 class="text-2xl md:text-3xl font-bold text-foreground">
+      Welcome back, <span class="text-primary">{{ user.get_full_name|default:user.username }}</span>
+    </h1>
+    <p class="text-muted-foreground mt-1">Upload your territory data to sync users and regions.</p>
+  </div>
+
+  <!-- Upload Card -->
+  <div class="max-w-4xl mx-auto">
+    <div class="border border-border rounded-xl bg-card shadow-lg overflow-hidden">
+
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-primary/5 to-primary/10 border-b border-border px-6 py-5">
+        <div class="flex items-center gap-3">
+          <div class="rounded-full p-2 bg-primary/10 border border-primary/20">
+            <i data-lucide="upload-cloud" class="w-6 h-6 text-primary"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-semibold text-foreground">Territory Data Upload</h2>
+            <p class="text-sm text-muted-foreground">Excel files only (.xlsx, .xls)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Body -->
+      <div class="p-6 md:p-8">
+        
+        <!-- Django Flash Messages (from redirect) -->
+        {% if messages %}
+          <div class="mb-6 space-y-3">
+            {% for message in messages %}
+              <div class="flex items-center gap-3 p-4 rounded-lg border {% if message.tags == 'error' %}bg-red-50 border-red-300 text-red-800{% elif message.tags == 'warning' %}bg-yellow-50 border-yellow-300 text-yellow-800{% else %}bg-green-50 border-green-300 text-green-800{% endif %}">
+                {% if message.tags == 'error' %}
+                  <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                {% elif message.tags == 'warning' %}
+                  <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                {% else %}
+                  <i data-lucide="check-circle-2" class="w-5 h-5"></i>
+                {% endif %}
+                <span class="font-medium">{{ message|safe }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <!-- Upload Form -->
+        <form id="uploadForm" 
+              method="post" 
+              enctype="multipart/form-data" 
+              action="{% url 'territory_upload' %}"
+              class="space-y-6">
+
+          {% csrf_token %}
+
+          <!-- File Drop Zone -->
+          <div id="dropZone" 
+               class="border-2 border-dashed border-muted-foreground/30 rounded-xl p-12 text-center hover:border-primary/50 transition-all duration-200 cursor-pointer"
+               onclick="document.getElementById('territory_file').click()">
+
+            <div id="uploadIcon">
+              <i data-lucide="file-spreadsheet" class="w-14 h-14 mx-auto text-muted-foreground mb-4"></i>
+            </div>
+
+            <p class="text-lg font-medium text-foreground">Drop your Excel file here or <span class="text-primary underline">click to browse</span></p>
+            <p class="text-sm text-muted-foreground mt-2">Max file size: 50MB • .xlsx or .xls only</p>
+
+            <input type="file" 
+                   id="territory_file" 
+                   name="territory_file" 
+                   accept=".xlsx,.xls"
+                   required
+                   class="hidden">
+          </div>
+
+          <!-- Selected File -->
+          <div id="fileInfo" class="hidden items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+            <i data-lucide="file-check" class="w-5 h-5 text-primary"></i>
+            <span id="fileName" class="font-medium text-foreground"></span>
+            <button type="button" onclick="clearFile()" class="ml-auto text-red-600 hover:text-red-700">
+              <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="flex justify-end gap-4">
+            <button type="submit" 
+                    id="uploadBtn" 
+                    disabled
+                    class="px-8 py-3 bg-primary text-primary-foreground rounded-lg font-medium flex items-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-primary/90 transition-all">
+              <span id="btnText">Upload File</span>
+              <span id="loadingSpinner" class="hidden">
+                <svg class="animate-spin w-5 h-5" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" stroke-dasharray="60" stroke-linecap="round" class="opacity-30"></circle>
+                  <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round"></path>
+                </svg>
+              </span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Live Status -->
+        <div id="status" class="mt-6 p-5 bg-blue-50 border border-blue-200 rounded-lg hidden">
+          <div class="flex items-center gap-3">
+            <div class="animate-spin">
+              <i data-lucide="loader-2" class="w-6 h-6 text-blue-600"></i>
+            </div>
+            <div>
+              <p class="font-medium text-blue-900">Processing your file...</p>
+              <p class="text-sm text-blue-700">This may take 1-2 minutes. Please do not close this page.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Template Link -->
+    <div class="mt-6 text-center text-sm text-muted-foreground">
+      Need a template? 
+      <a href="#" class="text-primary hover:underline font-medium">Download sample Excel template</a>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script>
+  lucide.createIcons();
+
+  const fileInput = document.getElementById('territory_file');
+  const dropZone = document.getElementById('dropZone');
+  const fileInfo = document.getElementById('fileInfo');
+  const fileNameSpan = document.getElementById('fileName');
+  const uploadBtn = document.getElementById('uploadBtn');
+  const btnText = document.getElementById('btnText');
+  const loadingSpinner = document.getElementById('loadingSpinner');
+  const status = document.getElementById('status');
+  const form = document.getElementById('uploadForm');
+
+  // Show selected file
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length > 0) {
+      const file = fileInput.files[0];
+      fileNameSpan.textContent = file.name;
+      fileInfo.classList.remove('hidden');
+      uploadBtn.disabled = false;
+    }
+  });
+
+  // Clear file
+  window.clearFile = () => {
+    fileInput.value = '';
+    fileInfo.classList.add('hidden');
+    uploadBtn.disabled = true;
+  };
+
+  // Drag & drop effects
+  ['dragover', 'dragenter'].forEach(evt => {
+    dropZone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      dropZone.classList.add('border-primary', 'bg-primary/5');
+    });
+  });
+
+  ['dragleave', 'dragend', 'drop'].forEach(evt => {
+    dropZone.addEventListener(evt, (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-primary', 'bg-primary/5');
+    });
+  });
+
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.files.length) {
+      fileInput.files = e.dataTransfer.files;
+      fileInput.dispatchEvent(new Event('change'));
+    }
+  });
+
+  // Form submit → show loading
+  form.addEventListener('submit', () => {
+    btnText.textContent = 'Uploading & Processing...';
+    loadingSpinner.classList.remove('hidden');
+    uploadBtn.disabled = true;
+    status.classList.remove('hidden');
+  });
+</script>
+{% endblock dashboard %}
