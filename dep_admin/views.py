@@ -517,31 +517,17 @@ def doctors_ai_course(request):
     if request.method == 'GET':
         # Get query params with default values
         search_query = request.GET.get('search_query', '')
-        sort = request.GET.get('sort', 'dr_id')
+        sort = request.GET.get('sort', 'territory')
         direction = request.GET.get('direction', 'asc')
         per_page = int(request.GET.get('per_page', 10))
         page_number = int(request.GET.get('page_number', 1))
         # Base queryset
-        data = DoctorAiCourse.objects.all()
-        if search_query:
-            data = data.filter(
-                Q(rpl_id__icontains=search_query) |
-                Q(name__icontains=search_query) |
-                Q(specialty__icontains=search_query) |
-                Q(designation__icontains=search_query)
-            )
-        sort_by = {
-            "dr_id": "rpl_id",
-            "dr_name": "name"
-        }.get(sort, sort)
-        if direction == "desc":
-            sort_by = f"-{sort_by}"    
-        data = data.order_by(sort_by)
+        data = utils.filter_doctor_ai_course_data(request)
+        
         # Pagination
         paginator = Paginator(data, per_page)
         page_obj = paginator.get_page(page_number)
-
-
+        
         # Pass context to template
         context = {
             'data': page_obj,

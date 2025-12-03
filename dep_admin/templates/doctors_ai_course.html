@@ -25,14 +25,96 @@
     <div class="my-container">
       <!-- Search and actions -->
       <div class="table-actions flex justify-between items-center flex-wrap gap-5 mb-6">
+          <!-- left section -->
+          <div class="left-actions flex items-center flex-wrap gap-4">
+            <!-- custom select -->
+            <div class="custom-select">
+              <button
+                class="select-button button button--md button--outline flex-1 w-full"
+                type="button"
+                id="columnToggle"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <span class="selected-value">Show/Hide Column</span>
+                <i data-lucide="chevron-down"></i>
+              </button>
+              <ul class="select-dropdown hidden" aria-labelledby="columnToggle">
+                <li>
+                  <label class="dropdown-item"
+                    ><input type="checkbox" checked data-column="0" /> #</label
+                  >
+                </li>
+                <li>
+                  <label class="dropdown-item"
+                    ><input type="checkbox" checked data-column="1" /> Dr. RPL ID</label
+                  >
+                </li>
+                <li>
+                  <label class="dropdown-item"
+                    ><input type="checkbox" checked data-column="2" /> Dr.
+                    Name</label
+                  >
+                </li>
+                <li>
+                  <label class="dropdown-item"
+                    ><input type="checkbox" checked data-column="3" />
+                    Territory</label
+                  >
+                </li>
+                <li>
+                  <label class="dropdown-item"
+                    ><input type="checkbox" checked data-column="4" /> Territory
+                    Name</label
+                  >
+                </li>
+                <li>
+                  <label class="dropdown-item"
+                    ><input type="checkbox" checked data-column="5" /> Region</label
+                  >
+                </li>
+                <li>
+                  <label class="dropdown-item"
+                    ><input type="checkbox" checked data-column="6" /> Zone</label
+                  >
+                </li>
+                
+                <li>
+                  <label class="dropdown-item"
+                    ><input type="checkbox" checked data-column="7" /> Specialty</label
+                  >
+                </li>
+                <li>
+                  <label class="dropdown-item"
+                    ><input type="checkbox" checked data-column="8" /> Designation</label
+                  >
+                </li>
+                <li>
+                  <label class="dropdown-item"
+                    ><input type="checkbox" checked data-column="9" />
+                    Actions</label
+                  >
+                </li>
+              </ul>
+            </div>
+
         <form method="get">
           <input type="search" name="search_query" class="input" placeholder="Search..." value="{{ search_query }}" />
         </form>
+        </div>
 
-        <div class="flex gap-4">
-          <a href="{% url 'export_dac' %}" class="button button--md button--primary">
-            <i data-lucide="download"></i> Download
-          </a>
+        <!-- right section -->
+          <div class="right-actions flex items-center justify-center md:justify-start flex-wrap gap-4">
+            {% if user.is_superuser %}
+            <a href="{% url 'export_dac' %}?search={{ search_query|urlencode }}&sort={{ sort }}&direction={{ direction }}&per_page={{ per_page }}" class="button button--md flex-1 button--primary"><i data-lucide="download"></i> Download</a>
+            {% else %}
+            <a href="{% url 'export_dac' %}" class="button button--md flex-1 button--primary pointer-events-none opacity-50 cursor-not-allowed"><i data-lucide="download"></i> Download</a>
+            {% endif %}
+            <button class="button button--md flex-1 button--secondary copy-table-data" id="copyTableData" onclick="copyTableData('doctorTable')">
+              <i data-lucide="copy"></i> Copy
+            </button>
+            <a href="{% url 'export_dac' %}?search={{ search_query|urlencode }}&sort={{ sort }}&direction={{ direction }}&per_page={{ per_page }}" class="button button--md flex-1 button--outline"><i data-lucide="file"></i> Excel</a> 
+          </div>
         </div>
       </div>
 
@@ -42,8 +124,66 @@
           <thead class="table-head">
             <tr class="table-row">
               <th class="table-head">#</th>
-              <th class="table-head">Dr. RPL ID</th>
-              <th class="table-head">Dr. Name</th>
+              <th class="table-head">
+                <a class="button button--md button--ghost flex" href="?search={{ search_query|urlencode }}&sort=dr_id&direction={% if sort == 'dr_id' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                Dr. RPL ID
+                {% if sort == 'dr_id' %}
+                    <i data-lucide="chevron-{% if direction == 'asc' %}up{% else %}down{% endif %}"></i>
+                {% else %}
+                    <i data-lucide="chevrons-up-down"></i>
+                {% endif %}
+                </a>
+            </th>
+            <th class="table-head">
+                <a class="button button--md button--ghost flex" href="?search={{ search_query|urlencode }}&sort=dr_name&direction={% if sort == 'dr_name' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                Dr. Name
+                {% if sort == 'dr_name' %}
+                    <i data-lucide="chevron-{% if direction == 'asc' %}up{% else %}down{% endif %}"></i>
+                {% else %}
+                    <i data-lucide="chevrons-up-down"></i>
+                {% endif %}
+                </a>
+            </th>
+            <th class="table-head">
+                <a class="button button--md button--ghost flex" href="?search={{ search_query|urlencode }}&sort=territory&direction={% if sort == 'territory' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                Territory
+                {% if sort == 'territory' %}
+                    <i data-lucide="chevron-{% if direction == 'asc' %}up{% else %}down{% endif %}"></i>
+                {% else %}
+                    <i data-lucide="chevrons-up-down"></i>
+                {% endif %}
+                </a>
+            </th>
+            <th class="table-head">
+                <a class="button button--md button--ghost flex" href="?search={{ search_query|urlencode }}&sort=territory_name&direction={% if sort == 'territory_name' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                Territory Name
+                {% if sort == 'territory_name' %}
+                    <i data-lucide="chevron-{% if direction == 'asc' %}up{% else %}down{% endif %}"></i>
+                {% else %}
+                    <i data-lucide="chevrons-up-down"></i>
+                {% endif %}
+                </a>
+            </th>
+            <th class="table-head">
+                <a class="button button--md button--ghost flex" href="?search={{ search_query|urlencode }}&sort=region&direction={% if sort == 'region' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                Region
+                {% if sort == 'region' %}
+                    <i data-lucide="chevron-{% if direction == 'asc' %}up{% else %}down{% endif %}"></i>
+                {% else %}
+                    <i data-lucide="chevrons-up-down"></i>
+                {% endif %}
+                </a>
+            </th>
+            <th class="table-head">
+                <a class="button button--md button--ghost flex" href="?search={{ search_query|urlencode }}&sort=zone&direction={% if sort == 'zone' and direction == 'asc' %}desc{% else %}asc{% endif %}">
+                Zone
+                {% if sort == 'zone' %}
+                    <i data-lucide="chevron-{% if direction == 'asc' %}up{% else %}down{% endif %}"></i>
+                {% else %}
+                    <i data-lucide="chevrons-up-down"></i>
+                {% endif %}
+                </a>
+            </th>
               <th class="table-head">Specialty</th>
               <th class="table-head">Designation</th>
               <th class="table-head">Actions</th>
@@ -55,6 +195,10 @@
               <td class="table-cell">{{ forloop.counter }}</td>
               <td class="table-cell">{{ item.rpl_id }}</td>
               <td class="table-cell">{{ item.name }}</td>
+              <td class="table-cell">{{ item.territory.territory }}</td>
+              <td class="table-cell">{{ item.territory.territory_name }}</td>
+              <td class="table-cell">{{ item.territory.region_name }}</td>
+              <td class="table-cell">{{ item.territory.zone_name }}</td>
               <td class="table-cell">{{ item.specialty }}</td>
               <td class="table-cell">{{ item.designation }}</td>
               <td class="table-cell">
