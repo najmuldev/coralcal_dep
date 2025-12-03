@@ -553,25 +553,25 @@ def territory_upload(request):
             if not territory_file.name.endswith(('.xlsx', '.xls')):
                 messages.error(request, "Please upload an Excel file.")
                 return redirect('territory_upload')
-            
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx') as tmp_file:
-                    for chunk in territory_file.chunks():
-                        tmp_file.write(chunk)
-                    tmp_path = tmp_file.name
+            suffix = os.path.splitext(territory_file.name)[1]
+            tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
                     
             try:
+                for chunk in territory_file.chunks():
+                    tmp_file.write(chunk)
+                tmp_file.close()
                 # Call your existing management command
                 call_command(
                     'add_territories', 
-                    file_path=tmp_path
+                    file_path=tmp_file.name
                 )
             except Exception as e:
                 messages.error(request, f"Error processing file: {str(e)}")
                 return redirect('territory_upload')
             finally:
                 # Always clean up temp file
-                if os.path.exists(tmp_path):
-                    os.unlink(tmp_path)
+                if os.path.exists(tmp_file.name):
+                    os.unlink(tmp_file.name)
             try:
                 call_command(
                     'create_users'
