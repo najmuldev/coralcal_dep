@@ -7,6 +7,8 @@ from core.models import Territory
 from django.db.models import Q
 import openpyxl
 from django.http import HttpResponse
+from dep_admin import utils
+from io import BytesIO
 
 # Create your views here.
 def dac_form(request):
@@ -124,32 +126,32 @@ def delete_dac(request,territory):
     
 @login_required
 def export_dac(request):
-    wb = openpyxl.Workbook()
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = "Doctors AI Course Data"
+    headers = ['Dr. RPL ID', 'Dr. Name', 'Territory ID', 'Territory Name', 'Region', 'Zone', 'Specialty', 'Designation']
+    worksheet.append(headers)
 
-    # --- Sheet 1: Doctors ---
-    ws_doctors = wb.active
-    ws_doctors.title = "Doctors"
-    ws_doctors.append(['RPL ID', 'Name', 'Speciality', 'Designation'])
-    search_query = request.GET.get('search_query', '')
+    data = utils.filter_doctor_ai_course_data(request)
+    for obj in data:
+        row = [
+            obj.rpl_id,
+            obj.name,
+            obj.territory.territory,
+            obj.territory.territory_name,
+            obj.territory.region_name,
+            obj.territory.zone_name,
+            obj.specialty,
+            obj.designation
+        ]
+        worksheet.append(row)
 
-    data = DoctorAiCourse.objects.all()
-    if search_query:
-            data = data.filter(
-                Q(rpl_id__icontains=search_query) |
-                Q(name__icontains=search_query) |
-                Q(specialty__icontains=search_query) |
-                Q(designation__icontains=search_query)
-            )
-    for doc in data:
-        ws_doctors.append([doc.rpl_id, doc.name, doc.specialty, doc.designation])
-
-   
+    buffer = BytesIO()
+    workbook.save(buffer)
+    buffer.seek(0)
 
     # Set response
-    response = HttpResponse(
-        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    )
-    response['Content-Disposition'] = 'attachment; filename=ai_for_doctors.xlsx'
-    wb.save(response)
+    response = HttpResponse(buffer.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="ai_for_doctors.xlsx"'
     return response
 
