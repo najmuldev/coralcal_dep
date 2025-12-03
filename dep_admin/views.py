@@ -583,3 +583,17 @@ def territory_upload(request):
         else:
             messages.error(request, "Please select a file.")
     return render(request, 'territory_upload.html')
+
+
+@login_required
+def download_territory_template(request):
+    file_path = os.path.join(settings.BASE_DIR, 'core', 'data', 'territories.xlsx')
+    
+    if not os.path.exists(file_path):
+        messages.error(request, "Territory template file not found.")
+        return redirect('territory_upload')
+
+    with open(file_path, 'rb') as fh:
+        response = HttpResponse(fh.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        response['Content-Disposition'] = 'attachment; filename="territory_template.xlsx"'
+        return response

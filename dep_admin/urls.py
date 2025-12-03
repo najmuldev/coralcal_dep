@@ -21,4 +21,5 @@ urlpatterns = [
     path('doctors_data_export', views.doctors_data_export, name='doctors_data_export'),
     path('doctors_ai_course', views.doctors_ai_course, name='doctors_ai_course'),
     path('territory_upload', views.territory_upload, name='territory_upload'),
+    path('download_territory_template', views.download_territory_template, name='download_territory_template'),
 ]
