@@ -33,22 +33,6 @@ class Command(BaseCommand):
                 self.stdout.write(f"Created profile for user: {username}")
             else:
                 self.stdout.write(f"Updated profile for user: {username}")
-
-        # Create admin user
-        admin_username = 'admin'
-        admin_password = 'coralcal@123'
-        if not User.objects.filter(username=admin_username).exists():
-            User.objects.create_superuser(
-                username=admin_username,
-                password=admin_password,
-                email='admin@example.com'
-            )
-            self.stdout.write(self.style.SUCCESS('Created admin user'))
-        else:
-            user = User.objects.get(username=admin_username)
-            user.set_password(admin_password)
-            user.save()
-            self.stdout.write('Admin user already exists')
             
         # Create zone users 
         for zone in Territory.objects.values_list('zone_name', flat=True).distinct():
