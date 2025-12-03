@@ -52,6 +52,13 @@
           <span class="toggle">Access Control</span></a
         >
         {% endif %}
+
+        {% if request.user.is_superuser %}
+        <a class="navlist" href="/dep/admin/territory_upload"
+          ><i data-lucide="upload-cloud"></i>
+          <span class="toggle">Territory Upload</span></a
+        >
+        {% endif %}
       </nav>
     </section>
 
