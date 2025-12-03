@@ -52,6 +52,11 @@
                      {% if doctor.specialty == "Orthopedics" %}checked{% endif %}>
               <span>Orthopedics</span>
             </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="dr_speciality" value="Others" required
+                     {% if doctor.specialty == "Others" %}checked{% endif %}>
+              <span>Others</span>
+            </label>
           </div>
         </div>
 
