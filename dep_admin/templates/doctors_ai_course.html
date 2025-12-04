@@ -203,8 +203,6 @@
               <td class="table-cell">{{ item.designation }}</td>
               <td class="table-cell">
                 <a class="button button--icon button--outline" href="{% url 'edit_dac' %}?territory={{item.territory.territory}}"><i data-lucide="edit" class="text-primary"></i></a>
-                
-                <a class="button button--icon button--outline" href="{% url 'delete_dac' item.territory.territory %}"><i data-lucide="trash" class="text-destructive"></i></a>
 
                 <a class="button button--icon button--outline" onclick="confirmDelete('{{item.territory.territory}}','{{item.name}}', '{{item.territory.territory}}')"><i data-lucide="trash" class="text-destructive"></i></a>
               </td>
