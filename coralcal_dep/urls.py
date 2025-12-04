@@ -14,4 +14,5 @@ urlpatterns = [
     path('doctors_opinion/', include('doctors_opinion.urls')),
     path('doctors_data/', include('doctors_data.urls')),
     path('dac/', include('doctors_ai_course.urls')),
+    path('plant/', include('plant.urls')),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
