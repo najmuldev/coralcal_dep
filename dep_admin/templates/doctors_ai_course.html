@@ -205,6 +205,8 @@
                 <a class="button button--icon button--outline" href="{% url 'edit_dac' %}?territory={{item.territory.territory}}"><i data-lucide="edit" class="text-primary"></i></a>
                 
                 <a class="button button--icon button--outline" href="{% url 'delete_dac' item.territory.territory %}"><i data-lucide="trash" class="text-destructive"></i></a>
+
+                <a class="button button--icon button--outline" onclick="confirmDelete('{{item.territory.territory}}','{{item.name}}', '{{item.territory.territory}}')"><i data-lucide="trash" class="text-destructive"></i></a>
               </td>
             </tr>
             {% endfor %}
@@ -347,5 +349,31 @@
       });
     });
   })();
+
+  function confirmDelete(instanceId, instanceName, territory){
+    Swal.fire({
+      title: "Are you sure?",
+      html: `Permanently delete <strong>${instanceName}</strong>?<br><br> 
+            <span class="text-red-500 font-semibold">This action cannot be undone.</span>`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
+      customClass: {
+        popup: 'border border-border rounded-lg',
+        confirmButton:'button button--md button--destructive',
+        cancelButton: 'button button--md button--secondary'
+      }
+    }).then((result) => {
+      if (result.isConfirmed){
+        const currentParams = new URLSearchParams(window.location.search);
+        currentParams.set('territory', territory);
+        const nextParam = currentParams.toString();
+        const redirectTo = nextParam? `?${nextParam}` : '?page=1&per_page=10';
+        window.location.href=`/dac/delete/${instanceId}?territory=${territory}&next=${encodeURIComponent(redirectTo)}`
+      }
+    })
+  }
 </script>
 {% endblock %}
