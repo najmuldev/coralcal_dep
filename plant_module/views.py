@@ -132,3 +132,17 @@ def edit(request, instance_id):
         except Exception as e:
             messages.error(request, 'Error updating Plant Module data: ' + str(e))
             return redirect('p_history')
+        
+@login_required
+def delete(request, instance_id):
+    try:
+        obj = PlantModule.objects.get(id=instance_id)
+        obj.delete()
+        messages.success(request, "Plant Module data deleted successfully.")
+        return redirect('p_history')
+    except PlantModule.DoesNotExist:
+        messages.error(request, "Plant Module data not found.")
+        return redirect('p_history')
+    except Exception as e:
+        messages.error(request, 'Error deleting Plant Module data: ' + str(e))
+        return redirect('p_history')
