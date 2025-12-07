@@ -1,5 +1,67 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, HttpResponse
+from django.contrib import messages
+from .models import PlantModule
+from core.models import Territory
 
 # Create your views here.
 def form(request):
-    return render(request, 'p_form.html')
+    if request.method == 'POST':
+        territory_id = request.user
+        dr_id = request.POST.get('dr_id')
+        dr_name = request.POST.get('dr_name')
+        specialty = request.POST.get('dr_specialty')
+        designation = request.POST.get('dr_designation')
+        location = request.POST.get('location')
+        first_flower_plant = request.POST.get('first_flower_plant')
+        second_flower_plant = request.POST.get('second_flower_plant')
+        third_flower_plant = request.POST.get('third_flower_plant')
+        first_medicinal_plant = request.POST.get('first_medicinal_plant')
+        second_medicinal_plant = request.POST.get('second_medicinal_plant')
+        
+        fields = (
+            dr_id, dr_name, specialty, designation, location, 
+            first_flower_plant, second_flower_plant, third_flower_plant, 
+            first_medicinal_plant, second_medicinal_plant
+        )
+        
+        if not all (fields):
+            messages.error(request, "Please fill in all the fields.")
+            return redirect('p_form')
+        
+        plants = f'{first_flower_plant}, {second_flower_plant}, {third_flower_plant}, {first_medicinal_plant}, {second_medicinal_plant}'
+        
+        try:
+            territory= Territory.objects.get(territory=territory_id)
+            PlantModule.objects.create(
+                territory=territory,
+                dr_id=dr_id,
+                dr_name=dr_name,
+                specialty=specialty,
+                designation=designation,
+                location=location,
+                plants=plants
+            )
+            messages.success(request, "Plant data added successfully.")
+            return redirect('p_form')
+        except Exception as e:
+            messages.error(request, "Error adding Plant data: " + str(e))
+            print("Error adding Plant data: " + str(e))
+            return redirect('p_form')
+    
+    if request.method == 'GET':
+        territory_id = request.user
+        try:
+            territory= Territory.objects.get(territory=territory_id)
+        except Exception as e:
+            messages.error(request, f"Error getting territory: {str(e)}")
+            return redirect('p_form')
+        
+        try:
+            obj = PlantModule.objects.filter(territory=territory)
+            obj_count = obj.count()
+            if obj_count >= 2:
+                # return redirect('p_history')
+                return HttpResponse("You have exceeded the limit of 2 entries.")
+        except PlantModule.DoesNotExist:
+            obj = None
+    return render(request, 'p_form.html', {'obj': obj})
