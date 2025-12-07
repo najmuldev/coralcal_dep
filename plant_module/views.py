@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect, HttpResponse
 from django.contrib import messages
 from .models import PlantModule
 from core.models import Territory
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required
 def form(request):
     if request.method == 'POST':
         territory_id = request.user
@@ -54,14 +56,30 @@ def form(request):
             territory= Territory.objects.get(territory=territory_id)
         except Exception as e:
             messages.error(request, f"Error getting territory: {str(e)}")
-            return redirect('p_form')
+            return redirect('home')
         
         try:
             obj = PlantModule.objects.filter(territory=territory)
             obj_count = obj.count()
             if obj_count >= 2:
-                # return redirect('p_history')
-                return HttpResponse("You have exceeded the limit of 2 entries.")
+                messages.error(request, "You have exceeded the limit of 2 entries.")
+                return redirect('p_history')
         except PlantModule.DoesNotExist:
             obj = None
     return render(request, 'p_form.html', {'obj': obj})
+
+@login_required
+def history(request):
+    territory_id = request.user
+    try:
+        territory = Territory.objects.get(territory=territory_id)
+        obj = PlantModule.objects.filter(territory=territory)
+    except Territory.DoesNotExist:
+        messages.error(request, "Territory not found.")
+        return redirect('p_form')
+    except PlantModule.DoesNotExist:
+        obj = None
+    except Exception as e:
+        messages.error(request, f"Error getting PlantModule: {str(e)}")
+        return redirect ('home')
+    return render(request, 'p_hist.html', {'obj': obj})
