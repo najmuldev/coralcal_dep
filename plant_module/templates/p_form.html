@@ -34,7 +34,7 @@
                         <form method="post" class="flex flex-col gap-6" enctype="multipart/form-data" onsubmit="return submitForm()">
                             {% csrf_token %}
                             <div class="form-item">
-                                <label class="label" for="dr_id">Doctor RPL ID</label>
+                                <label class="label" for="dr_id">Doctor RPL ID<span class="text-red-500">*</span></label>
                                 <input 
                                     type="text"
                                     id="dr_id"
@@ -47,7 +47,7 @@
                             </div>
 
                             <div class="form-item">
-                                <label class="label" for="dr_name">Doctor Name</label>
+                                <label class="label" for="dr_name">Doctor Name<span class="text-red-500">*</span></label>
                                 <input 
                                     type="text"
                                     id="dr_name"
@@ -58,33 +58,54 @@
                                     placeholder="Enter Doctor Name"
                                 />
                             </div>
+                            <!-- Specialty -->
                             <div class="form-item">
-                                <label class="label" for="dr_address">Doctor Address</label>
-                                <input 
-                                    type="text"
-                                    id="dr_address"
-                                    name="dr_address"
-                                    maxlength="100"
-                                    class="input"
-                                    required
-                                    placeholder="Enter Doctor Address"
-                                />
+                                <label class="label">Specialty <span class="text-red-500">*</span></label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center gap-2">
+                                    <input type="radio" name="dr_specialty" value="Gynecologists" required
+                                            {% if doctor.specialty == "Gynecologists" %}checked{% endif %}>
+                                    <span>Gynecologists</span>
+                                    </label>
+                                    <label class="flex items-center gap-2">
+                                    <input type="radio" name="dr_specialty" value="Orthopedics" required
+                                            {% if doctor.specialty == "Orthopedics" %}checked{% endif %}>
+                                    <span>Orthopedics</span>
+                                    </label>
+                                    <label class="flex items-center gap-2">
+                                    <input type="radio" name="dr_specialty" value="Others" required
+                                            {% if doctor.specialty == "Others" %}checked{% endif %}>
+                                    <span>Others</span>
+                                    </label>
+                                </div>
                             </div>
+
+                            <!-- Designation -->
                             <div class="form-item">
-                                <label class="label" for="rm_phone">RM Mobile</label>
+                                <label class="label" for="dr_designation">Designation <span class="text-red-500">*</span></label>
+                                <textarea id="dr_designation" name="dr_designation" maxlength="500" rows="2"
+                                            class="input resize-none auto-expand" required
+                                            placeholder="Enter Designation: Professor, Department of Surgery, DMC.">{{ doctor.designation|default:'' }}</textarea>
+                                <div class="text-right text-xs mt-1 text-gray-500">
+                                    <span id="designationCount">0</span>/500 characters
+                                </div>
+                            </div>
+
+                            <div class="form-item">
+                                <label class="label" for="location">Location<span class="text-red-500">*</span></label>
                                 <input 
                                     type="text"
-                                    id="rm_phone"
-                                    name="rm_phone"
+                                    id="location"
+                                    name="location"
                                     maxlength="100"
                                     class="input"
                                     required
-                                    placeholder="Enter RM Mobile Number"
+                                    placeholder="Enter Doctor Location"
                                 />
                             </div>
 
                             <div class="form-item">
-                                <label class="label" for="select_book">Select Flower Plant(3 Items)</label>
+                                <label class="label" for="select_book">Select Flower Plant(3 Items)<span class="text-red-500">*</span></label>
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                                     <div class="thumbnail cursor-pointer rounded-xl overflow-hidden border border-gray-300" data-name="Hasna Hena" data-type="flower" onclick="selectThumbnail(this)">
                                         <img src="{% static 'images/flower/hasnahena.png' %}" alt="flower-1" class="object-cover w-full h-32">
@@ -114,7 +135,7 @@
                             </div>
 
                             <div class="form-item">
-                                <label class="label" for="select_book">Select Medicinal Plant(2 Items)</label>
+                                <label class="label" for="select_book">Select Medicinal Plant(2 Items)<span class="text-red-500">*</span></label>
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                                     <div class="thumbnail cursor-pointer rounded-xl overflow-hidden border border-gray-300" data-name="Mint" data-type="medicinal" onclick="selectThumbnail(this)">
                                         <img src="{% static 'images/medicine/mint.png' %}" alt="medicinal-1" class="object-cover w-full h-32">
@@ -233,5 +254,24 @@
         document.getElementById('errorModal').classList.add('hidden');
         document.getElementById('errorModal').classList.remove('flex');
     }
+
+    function updateDesignationCounter() {
+  const textarea = document.getElementById('dr_designation');
+  const counter = document.getElementById('designationCount');
+  if (textarea && counter) {
+    counter.textContent = textarea.value.length;
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
+}
+
+// Initialize on load
+window.addEventListener('DOMContentLoaded', () => {
+  updateDesignationCounter();  // Set initial count & height
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+
+  // Auto-expand + counter
+  document.getElementById('dr_designation').addEventListener('input', updateDesignationCounter);
+});
 </script>
 {% endblock %}
