@@ -83,3 +83,52 @@ def history(request):
         messages.error(request, f"Error getting PlantModule: {str(e)}")
         return redirect ('home')
     return render(request, 'p_hist.html', {'obj': obj})
+
+@login_required
+def edit(request, instance_id):
+    if request.method == 'GET':
+        try:
+            obj = PlantModule.objects.get(id=instance_id)
+            data = {}
+            data['first_flower_plant'] = obj.plants.split(',')[0]
+            data['second_flower_plant'] = obj.plants.split(',')[1].strip()
+            data['third_flower_plant'] = obj.plants.split(',')[2].strip()
+            data['first_medicinal_plant'] = obj.plants.split(',')[3].strip()
+            data['second_medicinal_plant'] = obj.plants.split(',')[4].strip()
+            data['dr_id'] = obj.dr_id
+            data['dr_name'] = obj.dr_name
+            data['specialty'] = obj.specialty
+            data['designation'] = obj.designation
+            data['location'] = obj.location
+            return render(request, 'p_edit.html', {'obj': data})
+        except PlantModule.DoesNotExist:
+            messages.error(request, "Plant Module data not found.")
+            return redirect('p_history')
+        except Exception as e:
+            messages.error(request, 'Error getting Plant Module data: ' + str(e))
+            return redirect('p_history')
+        
+    if request.method == 'POST':
+        try:
+            obj = PlantModule.objects.get(id=instance_id)
+            obj.dr_id = request.POST.get('dr_id')
+            obj.dr_name = request.POST.get('dr_name')
+            obj.specialty = request.POST.get('dr_specialty')
+            obj.designation = request.POST.get('dr_designation')
+            obj.location = request.POST.get('location')
+            first_flower_plant = request.POST.get('first_flower_plant')
+            second_flower_plant = request.POST.get('second_flower_plant')
+            third_flower_plant = request.POST.get('third_flower_plant')
+            first_medicinal_plant = request.POST.get('first_medicinal_plant')
+            second_medicinal_plant = request.POST.get('second_medicinal_plant')
+            plants = f'{first_flower_plant}, {second_flower_plant}, {third_flower_plant}, {first_medicinal_plant}, {second_medicinal_plant}'
+            obj.plants = plants
+            obj.save()
+            messages.success(request, "Plant Module data updated successfully.")
+            return redirect('p_history')
+        except PlantModule.DoesNotExist:
+            messages.error(request, "Plant Module data not found.")
+            return redirect('p_history')
+        except Exception as e:
+            messages.error(request, 'Error updating Plant Module data: ' + str(e))
+            return redirect('p_history')
