@@ -129,18 +129,18 @@ def export_dac(request):
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
     worksheet.title = "Doctors AI Course Data"
-    headers = ['Dr. RPL ID', 'Dr. Name', 'Territory ID', 'Territory Name', 'Region', 'Zone', 'Specialty', 'Designation']
+    headers = [ 'Zone','Region', 'Territory ID', 'Territory Name','Dr. RPL ID', 'Dr. Name',  'Specialty', 'Designation']
     worksheet.append(headers)
 
     data = utils.filter_doctor_ai_course_data(request)
     for obj in data:
         row = [
-            obj.rpl_id,
-            obj.name,
+            obj.territory.zone_name,
+            obj.territory.region_name,
             obj.territory.territory,
             obj.territory.territory_name,
-            obj.territory.region_name,
-            obj.territory.zone_name,
+            obj.rpl_id,
+            obj.name,
             obj.specialty,
             obj.designation
         ]
