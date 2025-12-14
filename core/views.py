@@ -56,5 +56,6 @@ def territory_home(request):
         'doctors_opinion': {'label': "Doctor Opinion", 'url_name': 'do_form', 'is_active': access_control_states['doctors_opinion']},
         'doctors_data': {'label': "Doctor Chamber Info", 'url_name': 'dd_form', 'is_active': access_control_states['doctors_data']},
         'doctors_ai_course': {'label': "AI for Doctors", 'url_name': 'dac_form', 'is_active': access_control_states['doctors_ai_course']},
+        'plant_module': {'label': "HerStory Plant Catalogue", 'url_name': 'p_form', 'is_active': access_control_states['plant_module']},
     }
     return render(request, 'home.html', {'events': events})
