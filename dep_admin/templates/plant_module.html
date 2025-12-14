@@ -58,36 +58,46 @@
                 </li>
                 <li>
                   <label class="dropdown-item"
-                    ><input type="checkbox" checked data-column="3" />
+                    ><input type="checkbox" checked data-column="3" />Specialty</label
+                  >
+                </li>
+                <li>
+                  <label class="dropdown-item"
+                    ><input type="checkbox" checked data-column="4" />Designation</label
+                  >
+                </li>
+                <li>
+                  <label class="dropdown-item"
+                    ><input type="checkbox" checked data-column="5" />
                     Territory</label
                   >
                 </li>
                 <li>
                   <label class="dropdown-item"
-                    ><input type="checkbox" checked data-column="4" /> Territory
+                    ><input type="checkbox" checked data-column="6" /> Territory
                     Name</label
                   >
                 </li>
                 <li>
                   <label class="dropdown-item"
-                    ><input type="checkbox" checked data-column="5" /> Region</label
+                    ><input type="checkbox" checked data-column="7" /> Region</label
                   >
                 </li>
                 <li>
                   <label class="dropdown-item"
-                    ><input type="checkbox" checked data-column="6" /> Zone</label
+                    ><input type="checkbox" checked data-column="8" /> Zone</label
                   >
                 </li>
                 
                 <li>
                   <label class="dropdown-item"
-                    ><input type="checkbox" checked data-column="7" /> Plants</label
+                    ><input type="checkbox" checked data-column="9" /> Plants</label
                   >
                 </li>
 
                 <li>
                   <label class="dropdown-item"
-                    ><input type="checkbox" checked data-column="8" />
+                    ><input type="checkbox" checked data-column="10" />
                     Actions</label
                   >
                 </li>
@@ -144,6 +154,12 @@
                           </a>
                       </th>
                       <th class="table-head">
+                        Specialty
+                      </th>
+                      <th class="table-head">
+                        Designation
+                      </th>
+                      <th class="table-head">
                           <a class="button button--md button--ghost flex" href="?search={{ search_query|urlencode }}&sort=territory&direction={% if sort == 'territory' and direction == 'asc' %}desc{% else %}asc{% endif %}">
                           Territory
                           {% if sort == 'territory' %}
@@ -183,7 +199,7 @@
                           {% endif %}
                           </a>
                       </th>
-                      <th class="table-head">Flower Plants</th>
+                      <th class="table-head">Plants</th>
                       <th class="table-head">Actions</th>
                   </tr>
               </thead>
@@ -193,6 +209,8 @@
                       <td class="table-cell">{{ forloop.counter }}</td>
                       <td class="table-cell">{{item.dr_id}}</td>
                       <td class="table-cell">{{item.dr_name }}</td>
+                      <td class="table-cell">{{item.specialty }}</td>
+                      <td class="table-cell">{{item.designation }}</td>
                       <td class="table-cell">{{item.territory.territory}}</td>
                       <td class="table-cell">{{item.territory.territory_name}}</td>
                       <td class="table-cell">{{item.territory.region_name}}</td>
