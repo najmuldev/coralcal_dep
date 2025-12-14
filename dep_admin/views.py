@@ -597,3 +597,18 @@ def download_territory_template(request):
         response = HttpResponse(fh.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         response['Content-Disposition'] = 'attachment; filename="territory_template.xlsx"'
         return response
+    
+@login_required
+def plant_module(request):
+    if request.method == 'GET':
+        search_query = request.GET.get('search', '')
+        page_number = int(request.GET.get('page') or 1)
+        per_page = int(request.GET.get("per_page") or 10)
+        sort = request.GET.get("sort", "territory")
+        direction = request.GET.get("direction", "asc")        
+        data = utils.filter_plant_module_data(request)
+        paginator = Paginator(data, per_page)
+        page_obj = paginator.get_page(page_number)
+    return render(request, 'plant_module.html', {
+        'data': page_obj, 'search_query': search_query, 'per_page': per_page, 'sort': sort, 'direction': direction
+    })
