@@ -3,6 +3,7 @@ from django.contrib import messages
 from .models import PlantModule
 from core.models import Territory
 from django.contrib.auth.decorators import login_required
+from core.models import UserProfile
 
 # Create your views here.
 @login_required
@@ -112,13 +113,40 @@ def edit(request, instance_id):
             obj.plants = plants
             obj.save()
             messages.success(request, "HerStory Plant Catalogue data updated successfully.")
-            return redirect('p_history')
+            if not request.user.is_superuser:
+                try:
+                    profile = request.user.userprofile
+                    if profile.user_type == 'zone' or profile.user_type == 'region':
+                        return redirect('plant')
+                    else:
+                        return redirect('p_history')
+                except UserProfile.DoesNotExist:
+                    return redirect('p_history')
+            return redirect('plant')
         except PlantModule.DoesNotExist:
             messages.error(request, "HerStory Plant Catalogue data not found.")
-            return redirect('p_history')
+            if not request.user.is_superuser:
+                try:
+                    profile = request.user.userprofile
+                    if profile.user_type == 'zone' or profile.user_type == 'region':
+                        return redirect('plant')
+                    else:
+                        return redirect('p_history')
+                except UserProfile.DoesNotExist:
+                    return redirect('p_history')
+            return redirect('plant')
         except Exception as e:
             messages.error(request, 'Error updating HerStory Plant Catalogue data: ' + str(e))
-            return redirect('p_history')
+            if not request.user.is_superuser:
+                try:
+                    profile = request.user.userprofile
+                    if profile.user_type == 'zone' or profile.user_type == 'region':
+                        return redirect('plant')
+                    else:
+                        return redirect('p_history')
+                except UserProfile.DoesNotExist:
+                    return redirect('p_history')
+            return redirect('plant')
         
 @login_required
 def delete(request, instance_id):
@@ -126,10 +154,37 @@ def delete(request, instance_id):
         obj = PlantModule.objects.get(id=instance_id)
         obj.delete()
         messages.success(request, "HerStory Plant Catalogue data deleted successfully.")
-        return redirect('p_history')
+        if not request.user.is_superuser:
+            try:
+                profile = request.user.userprofile
+                if profile.user_type == 'zone' or profile.user_type == 'region':
+                    return redirect('plant')
+                else:
+                    return redirect('p_history')
+            except UserProfile.DoesNotExist:
+                return redirect('p_history')
+        return redirect('plant')
     except PlantModule.DoesNotExist:
         messages.error(request, "HerStory Plant Catalogue data not found.")
-        return redirect('p_history')
+        if not request.user.is_superuser:
+            try:
+                profile = request.user.userprofile
+                if profile.user_type == 'zone' or profile.user_type == 'region':
+                    return redirect('plant')
+                else:
+                    return redirect('p_history')
+            except UserProfile.DoesNotExist:
+                return redirect('p_history')
+        return redirect('plant')
     except Exception as e:
         messages.error(request, 'Error deleting HerStory Plant Catalogue data: ' + str(e))
-        return redirect('p_history')
+        if not request.user.is_superuser:
+            try:
+                profile = request.user.userprofile
+                if profile.user_type == 'zone' or profile.user_type == 'region':
+                    return redirect('plant')
+                else:
+                    return redirect('p_history')
+            except UserProfile.DoesNotExist:
+                return redirect('p_history')
+        return redirect('plant')

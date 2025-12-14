@@ -24,7 +24,7 @@
                 </h2>
                 <div class="flex gap-2">
                     {% if request.user.is_superuser %}
-                    <a href="{% url 'rgc' %}" class="button button--sm button--primary"><i data-lucide="arrow-left"></i> Back</a>
+                    <a href="{% url 'plant' %}" class="button button--sm button--primary"><i data-lucide="arrow-left"></i> Back</a>
                     {% else %}
                     <a href="{% url 'p_history' %}" class="button button--sm button--primary"><i data-lucide="arrow-left"></i> Back</a>
                     {% endif %}
