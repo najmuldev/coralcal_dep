@@ -612,3 +612,40 @@ def plant_module(request):
     return render(request, 'plant_module.html', {
         'data': page_obj, 'search_query': search_query, 'per_page': per_page, 'sort': sort, 'direction': direction
     })
+    
+@login_required 
+def export_plant_module(request):
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = "HerStory Plant Catalogue Data"
+    
+    # Define the header row
+    headers = ['Dr. RPL ID', 'Dr. Name','Dr. Specialty', 'Dr. Designation', 'Dr. Address', 'Territory ID', 'Territory Name', 'Region', 'Zone', 'Plant']
+    worksheet.append(headers)
+    data = utils.filter_plant_module_data(request)
+    # Populate the worksheet with data
+    for obj in data:
+        row = [
+            obj.dr_id,
+            obj.dr_name,
+            obj.specialty,
+            obj.designation,
+            obj.location,
+            obj.territory.territory,
+            obj.territory.territory_name,
+            obj.territory.region_name,
+            obj.territory.zone_name,
+            obj.plants
+
+        ]
+        worksheet.append(row)
+    
+    buffer = BytesIO()
+    workbook.save(buffer)
+    buffer.seek(0)
+    
+    # Create a response with the Excel file
+    response = HttpResponse(buffer.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="HerStory_Plant_Catalogue_data.xlsx"'
+    
+    return response

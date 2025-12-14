@@ -23,4 +23,5 @@ urlpatterns = [
     path('territory_upload', views.territory_upload, name='territory_upload'),
     path('download_territory_template', views.download_territory_template, name='download_territory_template'),
     path('plant', views.plant_module, name='plant'),
+    path('export_plant', views.export_plant_module, name='export_plant'),
 ]
