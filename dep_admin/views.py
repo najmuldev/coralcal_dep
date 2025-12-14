@@ -620,21 +620,21 @@ def export_plant_module(request):
     worksheet.title = "HerStory Plant Catalogue Data"
     
     # Define the header row
-    headers = ['Dr. RPL ID', 'Dr. Name','Dr. Specialty', 'Dr. Designation', 'Dr. Address', 'Territory ID', 'Territory Name', 'Region', 'Zone', 'Plant']
+    headers = ['Zone','Region','Territory ID','Territory Name','Dr. Name','Dr. RPL ID','Specialty', 'Designation', 'Location','Plant']
     worksheet.append(headers)
     data = utils.filter_plant_module_data(request)
     # Populate the worksheet with data
     for obj in data:
         row = [
-            obj.dr_id,
+            obj.territory.zone_name,
+            obj.territory.region_name,
+            obj.territory.territory,
+            obj.territory.territory_name,
             obj.dr_name,
+            obj.dr_id,
             obj.specialty,
             obj.designation,
             obj.location,
-            obj.territory.territory,
-            obj.territory.territory_name,
-            obj.territory.region_name,
-            obj.territory.zone_name,
             obj.plants
 
         ]
