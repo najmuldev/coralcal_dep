@@ -1,0 +1,140 @@
+{% extends 'base_header.html' %}
+{% load static %}
+{% block head_title %}Doctor's Data | CoralCal Doctor Engagement Platform{% endblock %}
+
+{% block content %}
+<div class="bg-background p-8 rounded-md border border-border shadow-sm max-w-2xl mx-auto my-4">
+  <div class="card">
+    <div class="mb-6 flex justify-between items-center">
+      <h2 class="text-sm sm:text-base md:text-lg font-bold text-primary">
+        AI for Doctors.
+      </h2>
+      {% if request.user.is_superuser %}
+      <a href="{% url 'doctors_ai_course' %}" class="button button--sm button--primary">
+        <i data-lucide="arrow-left"></i> Back
+      </a>
+      {% else %}
+      <a href="{% url 'home' %}" class="button button--sm button--primary">
+        <i data-lucide="arrow-left"></i> Back
+      </a>
+      {% endif %}
+    </div>
+
+    <div id="main-container" class="border border-border p-6 rounded-md bg-white">
+      <form id="uploadForm" method="post" class="flex flex-col gap-6" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- RPL ID -->
+        <div class="form-item">
+          <label class="label" for="dr_id">RPL ID <span class="text-red-500">*</span></label>
+          <input type="text" id="dr_id" name="dr_id" maxlength="10" class="input"
+                 required placeholder="Enter RPL ID" value="{{ doctor.rpl_id|default:'' }}" />
+        </div>
+
+        <!-- Name -->
+        <div class="form-item">
+          <label class="label" for="dr_name">Name <span class="text-red-500">*</span></label>
+          <input type="text" id="dr_name" name="dr_name" maxlength="100" class="input"
+                 required placeholder="Enter Dr. Name" value="{{ doctor.name|default:'' }}" />
+        </div>
+
+        <!-- Specialty -->
+        <div class="form-item">
+          <label class="label">Specialty <span class="text-red-500">*</span></label>
+          <div class="space-y-2">
+            <label class="flex items-center gap-2">
+              <input type="radio" name="dr_specialty" value="Gynecologists" required
+                     {% if doctor.specialty == "Gynecologists" %}checked{% endif %}>
+              <span>Gynecologists</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="dr_specialty" value="Orthopedics" required
+                     {% if doctor.specialty == "Orthopedics" %}checked{% endif %}>
+              <span>Orthopedics</span>
+            </label>
+            <label class="flex items-center gap-2">
+              <input type="radio" name="dr_specialty" value="Others" required
+                     {% if doctor.specialty == "Others" %}checked{% endif %}>
+              <span>Others</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Designation -->
+        <div class="form-item">
+          <label class="label" for="dr_designation">Designation <span class="text-red-500">*</span></label>
+          <textarea id="dr_designation" name="dr_designation" maxlength="500" rows="2"
+                    class="input resize-none auto-expand" required
+                    placeholder="Enter Designation: Professor, Department of Surgery, DMC.">{{ doctor.designation|default:'' }}</textarea>
+          <div class="text-right text-xs mt-1 text-gray-500">
+            <span id="designationCount">0</span>/500 characters
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <button type="submit" class="button button--md button--primary">
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Flying Error Toast -->
+  <div id="flyingErrorToast" class="hidden fixed top-6 right-6 bg-red-100 border border-red-300 text-red-800 px-4 py-3 rounded-lg shadow-lg z-50 transition-opacity">
+    <div class="flex items-center justify-between gap-4">
+      <p id="flyingErrorMessage" class="text-sm font-medium"></p>
+      <button onclick="closeFlyingError()" class="text-red-600 hover:text-red-800">
+        <i data-lucide="x"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+function updateDesignationCounter() {
+  const textarea = document.getElementById('dr_designation');
+  const counter = document.getElementById('designationCount');
+  if (textarea && counter) {
+    counter.textContent = textarea.value.length;
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
+}
+
+function showFlyingError(message) {
+  const toast = document.getElementById('flyingErrorToast');
+  const msg = document.getElementById('flyingErrorMessage');
+  msg.textContent = message;
+  toast.classList.remove('hidden');
+  setTimeout(closeFlyingError, 4000);
+}
+
+function closeFlyingError() {
+  document.getElementById('flyingErrorToast').classList.add('hidden');
+}
+
+// Basic client-side validation before submit
+document.getElementById('uploadForm').addEventListener('submit', function(e) {
+  const drId = document.getElementById('dr_id').value.trim();
+  const drName = document.getElementById('dr_name').value.trim();
+  const drSpecialty = document.querySelector('input[name="dr_specialty"]:checked');
+  const drDesignation = document.getElementById('dr_designation').value.trim();
+
+  if (!drId === '' || !drName === '' || !drSpecialty || drDesignation === '') {
+    e.preventDefault();
+    showFlyingError('Please fill all required fields correctly.');
+    return false;
+  }
+});
+
+// Initialize on load
+window.addEventListener('DOMContentLoaded', () => {
+  updateDesignationCounter();  // Set initial count & height
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+
+  // Auto-expand + counter
+  document.getElementById('dr_designation').addEventListener('input', updateDesignationCounter);
+});
+</script>
+{% endblock %}
