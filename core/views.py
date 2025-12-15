@@ -55,7 +55,8 @@ def territory_home(request):
         'green_corner': {'label': 'Radiant Green Corner', 'url_name': 'rgc_upload', 'is_active': access_control_states['green_corner']},
         'doctors_opinion': {'label': "Doctor Opinion", 'url_name': 'do_form', 'is_active': access_control_states['doctors_opinion']},
         'doctors_data': {'label': "Doctor Chamber Info", 'url_name': 'dd_form', 'is_active': access_control_states['doctors_data']},
-        'doctors_ai_course': {'label': "AI for Doctors", 'url_name': 'dac_form', 'is_active': access_control_states['doctors_ai_course']},
+        'doctors_ai_course': {'label': "AI for Doctors Old", 'url_name': 'dac_form', 'is_active': access_control_states['doctors_ai_course']},
+        'doctors_ai_course2': {'label': "AI for Doctors", 'url_name': 'dac2_form', 'is_active': access_control_states['doctors_ai_course2']},
         'plant_module': {'label': "HerStory Plant Catalogue", 'url_name': 'p_form', 'is_active': access_control_states['plant_module']},
     }
     return render(request, 'home.html', {'events': events})
