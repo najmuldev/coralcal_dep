@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'doctors_data',
     'doctors_ai_course',
     'plant_module',
+    'doctors_ai_course2',
 ]
 
 MIDDLEWARE = [
