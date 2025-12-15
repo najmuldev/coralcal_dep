@@ -112,13 +112,13 @@
                   <tr class="table-row">
                       <td class="table-cell">{{ forloop.counter }}</td>
                       <td class="table-cell">{{item.rpl_id}}</td>
-                      <td class="table-cell">{{item.dr_name }}</td>
+                      <td class="table-cell">{{item.name }}</td>
                       <td class="table-cell">{{item.specialty}}</td>
                       <td class="table-cell">{{item.designation}}</td>
                       <td class="table-cell">
                         <a class="button button--icon button--outline" href="{% url 'dac2_edit' item.id %}"><i data-lucide="edit" class="text-primary"></i></a>
                         
-                        <a class="button button--icon button--outline" href="{% url 'p_delete' item.id %}"><i data-lucide="trash" class="text-destructive"></i></a>
+                        <a class="button button--icon button--outline" href="{% url 'dac2_delete' item.id %}"><i data-lucide="trash" class="text-destructive"></i></a>
                     </td>
                   </tr>
                   {% endfor %}
