@@ -92,3 +92,14 @@ def edit_dac_form(request, instance_id):
     except Exception as e:
         messages.error(request, f"Error getting doctor: {str(e)}")
         return redirect_url(request, 'doctors_ai_course', 'doctors_ai_course', '')
+    
+    
+@login_required
+def dac2_history(request):
+    try:
+        territory = Territory.objects.get(territory=request.user.username)
+    except Exception as e:
+        messages.error(request, f"Error getting territory: {str(e)}")
+        return redirect('home')
+    obj = DoctorAiCourseUp.objects.filter(territory = territory)
+    return render(request, 'dac2_history.html', {'obj': obj})
