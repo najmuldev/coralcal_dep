@@ -46,7 +46,7 @@ def dac_form(request):
                 designation = dr_designation
             )
             messages.success(request, "Doctor saved successfully!")
-            return redirect('doctors_ai_course')
+            return redirect('dac2_form')
         except Exception as e:
             d = {
                 'dr_id': dr_id,
@@ -78,7 +78,7 @@ def edit_dac_form(request, instance_id):
                 obj.designation = dr_designation
                 obj.save()
                 messages.success(request, "Doctor updated successfully!")
-                return redirect(redirect_url(request, 'doctors_ai_course', 'doctors_ai_course', 'dac2_history'))
+                return redirect(redirect_url(request, 'doctors_ai_course2', 'doctors_ai_course2', 'dac2_history'))
             except Exception as e:
                 d = {
                     'dr_id': dr_id,
@@ -91,7 +91,7 @@ def edit_dac_form(request, instance_id):
         return render(request, 'dac2_form.html', {'doctor': obj})
     except Exception as e:
         messages.error(request, f"Error getting doctor: {str(e)}")
-        return redirect(redirect_url(request, 'doctors_ai_course', 'doctors_ai_course', 'dac2_history'))
+        return redirect(redirect_url(request, 'doctors_ai_course2', 'doctors_ai_course2', 'dac2_history'))
     
     
 @login_required
@@ -110,7 +110,7 @@ def dac2_delete(request, instance_id):
         obj = DoctorAiCourseUp.objects.get(id=instance_id)
         obj.delete()
         messages.success(request, "Doctor deleted successfully!")
-        return redirect(redirect_url(request, 'doctors_ai_course', 'doctors_ai_course', 'dac2_history'))
+        return redirect(redirect_url(request, 'doctors_ai_course2', 'doctors_ai_course2', 'dac2_history'))
     except Exception as e:
         messages.error(request, f"Error deleting doctor: {str(e)}")
-        return redirect(redirect_url(request, 'doctors_ai_course', 'doctors_ai_course', 'dac2_history'))
+        return redirect(redirect_url(request, 'doctors_ai_course2', 'doctors_ai_course2', 'dac2_history'))

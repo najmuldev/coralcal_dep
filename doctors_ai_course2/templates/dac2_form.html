@@ -10,13 +10,19 @@
         AI for Doctors.
       </h2>
       {% if request.user.is_superuser %}
-      <a href="{% url 'doctors_ai_course' %}" class="button button--sm button--primary">
+      <a href="{% url 'doctors_ai_course2' %}" class="button button--sm button--primary">
         <i data-lucide="arrow-left"></i> Back
       </a>
       {% else %}
-      <a href="{% url 'home' %}" class="button button--sm button--primary">
-        <i data-lucide="arrow-left"></i> Back
-      </a>
+      <div>
+        <a href="{% url 'dac2_history' %}" class="button button--sm button--primary">
+            <i data-lucide="history"></i> History
+        </a>
+        <a href="{% url 'home' %}" class="button button--sm button--primary">
+            <i data-lucide="arrow-left"></i> Back
+        </a>
+      </div>
+      
       {% endif %}
     </div>
 
