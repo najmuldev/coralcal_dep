@@ -20,6 +20,7 @@ urlpatterns = [
     path('doctors_data', views.doctors_data, name='doctors_data'),
     path('doctors_data_export', views.doctors_data_export, name='doctors_data_export'),
     path('doctors_ai_course', views.doctors_ai_course, name='doctors_ai_course'),
+    path('doctors_ai_course2', views.doctors_ai_course2, name='doctors_ai_course2'),
     path('territory_upload', views.territory_upload, name='territory_upload'),
     path('download_territory_template', views.download_territory_template, name='download_territory_template'),
     path('plant', views.plant_module, name='plant'),

@@ -525,7 +525,7 @@ def doctors_ai_course(request):
         per_page = int(request.GET.get('per_page', 10))
         page_number = int(request.GET.get('page_number', 1))
         # Base queryset
-        data = utils.filter_doctor_ai_course_data(request)
+        data = utils.filter_doctor_ai_course_data(request, model=1)
         
         # Pagination
         paginator = Paginator(data, per_page)
@@ -649,3 +649,32 @@ def export_plant_module(request):
     response['Content-Disposition'] = 'attachment; filename="HerStory_Plant_Catalogue_data.xlsx"'
     
     return response
+
+@login_required
+def doctors_ai_course2(request):
+    if request.method == 'GET':
+        # Get query params with default values
+        search_query = request.GET.get('search_query', '')
+        sort = request.GET.get('sort', 'territory')
+        direction = request.GET.get('direction', 'asc')
+        per_page = int(request.GET.get('per_page', 10))
+        page_number = int(request.GET.get('page_number', 1))
+        # Base queryset
+        data = utils.filter_doctor_ai_course_data(request)
+        
+        # Pagination
+        paginator = Paginator(data, per_page)
+        page_obj = paginator.get_page(page_number)
+        
+        # Pass context to template
+        context = {
+            'data': page_obj,
+            'search_query': search_query,
+            'sort': sort,
+            'direction': direction,
+            'per_page': per_page,
+            'page_number': page_number,
+            'total_pages': paginator.num_pages,
+        }
+
+        return render(request, 'doctors_ai_course2.html', context)

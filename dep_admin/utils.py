@@ -9,6 +9,7 @@ from doctors_opinion.models import DoctorOpinion, DoctorIndication
 from doctors_data.models import Doctor, Chamber
 from doctors_ai_course.models import DoctorAiCourse
 from plant_module.models import PlantModule
+from doctors_ai_course2.models import DoctorAiCourseUp
 
 def filter_knowledge_series_data(request):
     data = BookWishes.objects.select_related('territory').all()
@@ -291,8 +292,11 @@ def filter_doctors_data(request):
     return data
 
 
-def filter_doctor_ai_course_data(request):
-    data = DoctorAiCourse.objects.select_related('territory')
+def filter_doctor_ai_course_data(request, model=2):
+    if model == 1:
+        data = DoctorAiCourse.objects.select_related('territory')
+    else:
+        data = DoctorAiCourseUp.objects.select_related('territory')
     
     # Filter based on the User's profile.
     try:

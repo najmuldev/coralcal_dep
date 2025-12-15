@@ -18,7 +18,7 @@
         <span class="rounded-full p-1 border border-border text-primary">
           <i data-lucide="brain-circuit"></i>
         </span>
-        AI for Doctors Old.
+        AI for Doctors
       </h2>
     </div>
 
@@ -205,9 +205,9 @@
               <td class="table-cell">{{ item.specialty }}</td>
               <td class="table-cell">{{ item.designation }}</td>
               <td class="table-cell">
-                <a class="button button--icon button--outline" href="{% url 'edit_dac' %}?territory={{item.territory.territory}}"><i data-lucide="edit" class="text-primary"></i></a>
+                <a class="button button--icon button--outline" href="{% url 'dac2_edit' item.id %}"><i data-lucide="edit" class="text-primary"></i></a>
 
-                <a class="button button--icon button--outline" onclick="confirmDelete('{{item.territory.territory}}','{{item.name}}', '{{item.territory.territory}}')"><i data-lucide="trash" class="text-destructive"></i></a>
+                <a class="button button--icon button--outline" onclick="confirmDelete('{{item.id}}','{{item.name}}', '{{item.territory.territory}}')"><i data-lucide="trash" class="text-destructive"></i></a>
               </td>
             </tr>
             {% endfor %}
@@ -372,7 +372,7 @@
         currentParams.set('territory', territory);
         const nextParam = currentParams.toString();
         const redirectTo = nextParam? `?${nextParam}` : '?page=1&per_page=10';
-        window.location.href=`/dac/delete/${instanceId}?territory=${territory}&next=${encodeURIComponent(redirectTo)}`
+        window.location.href=`/dac2/delete/${instanceId}?territory=${territory}&next=${encodeURIComponent(redirectTo)}`
       }
     })
   }
