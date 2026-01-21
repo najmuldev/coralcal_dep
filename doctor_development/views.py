@@ -63,7 +63,7 @@ def dd_gift_choice(request):
                 img = static('images/image003.png')
             else:
                 print("No image found for the gift title:", gift_title)
-            return render(request, 'choice.html', {'obj': obj, 'img':img})
+            return render(request, 'dd_choice.html', {'obj': obj, 'img':img})
         return render(request, 'dd_gift_choice.html')
     
 @login_required
