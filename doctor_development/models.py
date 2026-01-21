@@ -10,7 +10,8 @@ class DoctorDevelopment(models.Model):
     class Gift(models.TextChoices):
         Gift1 = 'Araong gift card', 'araong gift card'
         Gift2 = 'Mega Mall gift card', 'Mega Mall gift card'
-        Gift3 = 'Watch', 'Watch'
+        Gift3 = 'Watch', 'Watch',
+        Gift4 = 'Kiam 7pcs set', 'Kiam 7pcs set',
     gift = models.CharField(max_length=100, choices=Gift.choices, default=Gift.Gift1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
