@@ -13,7 +13,7 @@ IMAGE_TO_GIFT = {
     'image3': 'Watch',
 }
 
-def gift_choice(request):
+def dd_gift_choice(request):
     if request.method == 'POST':
         dr_id = request.POST.get('dr_id')
         dr_name = request.POST.get('dr_name')
@@ -24,7 +24,7 @@ def gift_choice(request):
 
         if not (dr_id and dr_name and gift_title):
             messages.error(request, "All fields are required and a gift must be selected.")
-            return redirect('gift_choice')
+            return redirect('dd_gift_choice')
 
         try:
             territory_id = request.user.username
@@ -33,7 +33,7 @@ def gift_choice(request):
             print(territory)
             if not territory:
                 messages.error(request, "No territory found.")
-                return redirect('gift_choice')
+                return redirect('dd_gift_choice')
 
             # Save data
             DoctorDevelopment.objects.create(
@@ -43,10 +43,10 @@ def gift_choice(request):
                 gift=gift_title
             )
             messages.success(request, f"Successfully submitted gift wish for {dr_name}.")
-            return redirect('gift_choice')
+            return redirect('dd_gift_choice')
         except Exception as e:
             messages.error(request, f"Error occurred: {str(e)}")
-            return redirect('gift_choice')
+            return redirect('dd_gift_choice')
     if request.method=='GET':
         territory_id = request.user.username
         try:
@@ -64,7 +64,7 @@ def gift_choice(request):
             else:
                 print("No image found for the gift title:", gift_title)
             return render(request, 'choice.html', {'obj': obj, 'img':img})
-        return render(request, 'gift_choice.html')
+        return render(request, 'dd_gift_choice.html')
     
 @login_required
 def edit_choice(request, id):
@@ -87,7 +87,7 @@ def edit_choice(request, id):
             messages.success(request, f"Successfully updated gift wish for {dr_name}.")
             if request.user.is_superuser:
                 return redirect('doctor_development')
-            return redirect('gift_choice')
+            return redirect('dd_gift_choice')
         except Exception as e:
             messages.error(request, f"Error occurred: {str(e)}")
             return redirect('edit_dd_choice', id=id)
@@ -109,7 +109,7 @@ def edit_choice(request, id):
             messages.error(request, "Wish not found.")
             if request.user.is_superuser:
                 return redirect('doctor_development')
-            return redirect('gift_choice')
+            return redirect('dd_gift_choice')
 
 
 def export_wishlist(request):

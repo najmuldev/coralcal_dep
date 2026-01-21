@@ -58,5 +58,6 @@ def territory_home(request):
         'doctors_ai_course': {'label': "AI for Doctors Old", 'url_name': 'dac_form', 'is_active': access_control_states['doctors_ai_course']},
         'doctors_ai_course2': {'label': "AI for Doctors", 'url_name': 'dac2_form', 'is_active': access_control_states['doctors_ai_course2']},
         'plant_module': {'label': "HerStory Plant Catalogue", 'url_name': 'p_form', 'is_active': access_control_states['plant_module']},
+        'doctor_development': {'label': "Doctor Development 1Q 26", 'url_name': 'dd_gift_choice', 'is_active': access_control_states['doctor_development']},
     }
     return render(request, 'home.html', {'events': events})
