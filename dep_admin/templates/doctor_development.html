@@ -203,7 +203,7 @@
                       <td class="table-cell">{{item.territory.zone_name}}</td>
                       <td class="table-cell">{{item.gift}}</td>
                       <td class="table-cell">
-                          <a class="button button--icon button--outline" href="{% url 'edit_ks' item.id %}"><i data-lucide="edit" class="text-primary"></i></a>
+                          <a class="button button--icon button--outline" href="{% url 'edit_dd' item.id %}"><i data-lucide="edit" class="text-primary"></i></a>
                           
                           <a class="button button--icon button--outline" onclick="confirmDelete('{{item.id}}','{{item.dr_name}}', '{{item.territory.territory}}')"><i data-lucide="trash" class="text-destructive"></i></a>
                       </td>
