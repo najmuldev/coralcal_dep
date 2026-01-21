@@ -11,6 +11,7 @@ IMAGE_TO_GIFT = {
     'image1': 'Araong gift card',
     'image2': 'Mega Mall gift card',
     'image3': 'Watch',
+    'image4': 'Kiam 7pcs Set',
 }
 
 def dd_gift_choice(request):
@@ -61,6 +62,8 @@ def dd_gift_choice(request):
                 img = static('images/image002.png')
             elif gift_title == 'Watch':
                 img = static('images/image003.png')
+            elif gift_title == 'Kiam 7pcs Set':
+                img = static('images/image004.jpeg')
             else:
                 print("No image found for the gift title:", gift_title)
             return render(request, 'dd_choice.html', {'obj': obj, 'img':img})
@@ -102,6 +105,8 @@ def edit_choice(request, id):
                 img = static('images/image002.png')
             elif gift_title == 'Watch':
                 img = static('images/image003.png')
+            elif gift_title == 'Kiam 7pcs Set':
+                img = static('images/image004.jpeg')
             else:
                 img = ''
             return render(request, 'edit_dd_choice.html', {'obj': obj, 'img': img})
