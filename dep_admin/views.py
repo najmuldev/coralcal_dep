@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from knowledge_series.models import BookWishes
+from doctor_development.models import DoctorDevelopment
 from dr_gift_catalogs.models import DrGiftCatalog
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -678,3 +679,81 @@ def doctors_ai_course2(request):
         }
 
         return render(request, 'doctors_ai_course2.html', context)
+    
+
+
+
+@login_required
+def doctor_development(request):
+    if request.method == 'GET':
+        search_query = request.GET.get('search', '')
+        page_number = int(request.GET.get('page') or 1)
+        per_page = int(request.GET.get("per_page") or 10)
+        sort = request.GET.get("sort", "territory")
+        direction = request.GET.get("direction", "asc")        
+        # Get data usnig utils filter function
+        data = utils.filter_doctor_development_data(request)
+        paginator = Paginator(data, per_page)
+        page_obj = paginator.get_page(page_number)
+    return render(request, 'doctor_development.html', {
+        'data': page_obj, 'search_query': search_query, 'per_page': per_page, 'sort': sort, 'direction': direction
+    })
+    
+@login_required 
+def export_doctor_development(request):
+    # Create a new workbook and add a worksheet
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = "Doctor Development 1Q26"
+    
+    # Define the header row
+    headers = ['Dr. RPL ID', 'Dr. Name', 'Territory ID', 'Territory Name', 'Region', 'Zone', 'Gift']
+    worksheet.append(headers)
+    
+    # Get data using the utils function
+    data = utils.filter_doctor_development_data(request)
+    
+    # Populate the worksheet with data
+    for obj in data:
+        row = [
+            obj.dr_id,
+            obj.dr_name,
+            obj.territory.territory,
+            obj.territory.territory_name,
+            obj.territory.region_name,
+            obj.territory.zone_name,
+            obj.gift
+        ]
+        worksheet.append(row)
+    
+    # Save the workbook to a BytesIO object
+    buffer = BytesIO()
+    workbook.save(buffer)
+    buffer.seek(0)
+    
+    # Create a response with the Excel file
+    response = HttpResponse(buffer.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="doctor_development_data.xlsx"'
+    
+    return response
+
+@login_required
+def delete_doctor_development_data(request, id):
+    territory = request.user.username
+    if request.user.is_superuser:
+        territory = request.GET.get('territory')
+    # territory_obj = Territory.objects.get(territory=territory)
+    # ks_obj = BookWishes.objects.filter(territory__territory=territory)
+    obj = DoctorDevelopment.objects.get(id=id)
+    try:
+        obj.delete()
+        
+        messages.success(request, f"Data deleted successfully.")
+        if request.user.is_superuser:
+            return redirect('doctor_development')
+        return redirect('home')
+    except BookWishes.DoesNotExist:
+        messages.error(request, "Invalid Item selected.")
+        if request.user.is_superuser:
+            return redirect('doctor_development')
+        return redirect('home')
