@@ -10,6 +10,8 @@ from doctors_data.models import Doctor, Chamber
 from doctors_ai_course.models import DoctorAiCourse
 from plant_module.models import PlantModule
 from doctors_ai_course2.models import DoctorAiCourseUp
+from doctor_development.models import DoctorDevelopment
+
 
 def filter_knowledge_series_data(request):
     data = BookWishes.objects.select_related('territory').all()
@@ -402,4 +404,53 @@ def filter_plant_module_data(request):
         sort_by = f"-{sort_by}"
     data = data.order_by(sort_by)
     
+    return data
+
+
+
+
+def filter_doctor_development_data(request):
+    data = DoctorDevelopment.objects.select_related('territory').all()
+    # Filter based on the User's profile.
+    try:
+        profile = request.user.userprofile
+        if profile.user_type == 'zone':
+            data = data.filter(territory__zone_name=profile.zone_name)
+        elif  profile.user_type == 'region':
+            data = data.filter(territory__region_name=profile.region_name)
+    except UserProfile.DoesNotExist:
+        if not request.user.is_superuser:
+            data = DoctorDevelopment.objects.none()
+            
+    # Filter Based on search query
+    search_query = request.GET.get('search', '')
+    if search_query:
+        data = data.filter(
+            Q(dr_id__icontains=search_query) |
+            Q(dr_name__icontains=search_query) |
+            Q(gift__icontains=search_query) | 
+            Q(territory__territory__icontains=search_query) |
+            Q(territory__territory_name__icontains=search_query) |
+            Q(territory__region_name__icontains=search_query) |
+            Q(territory__zone_name__icontains=search_query)
+        )
+    # Sorting
+    sort = request.GET.get("sort", "territory")
+    direction = request.GET.get("direction", "asc")
+    sort_by = sort
+    if sort_by == "territory":
+        sort_by = "territory__territory"
+    elif sort_by == "territory_name":
+        sort_by = "territory__territory_name"
+    elif sort_by == "region":
+        sort_by = "territory__region_name"
+    elif sort_by == "zone":
+        sort_by = "territory__zone_name"
+    elif sort_by == "dr_id":
+        sort_by = "dr_id"
+    elif sort_by == "dr_name":
+        sort_by = "dr_name"
+    if direction == "desc":
+        sort_by = f"-{sort_by}"
+    data = data.order_by(sort_by)
     return data
