@@ -1,0 +1,188 @@
+{% extends 'base_header.html' %}
+{% load static %}
+{% block head_title %}Edit Pohela Boishakh Gift Choice Form | CoralCal Doctor Engagement Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+  .thumbnail {
+    transition: transform 0.3s ease, border-color 0.3s ease;
+  }
+  .thumbnail.selected {
+    border: 4px solid #3b82f6;
+    transform: scale(1.05);
+  }
+</style>
+{% endblock extra_css %}
+
+{% block content %}
+<div
+  class="bg-background p-8 rounded-md border border-border shadow-sm max-w-2xl mx-auto"
+>
+  <div class="card">
+    <div class="[&_h2]:font-semibold [&_h2]:text-primary [&_h2]:text-lg mb-6 flex justify-between gap-5 text-center ">
+        <h2 class="text-2xl font-bold text-primary text-center">
+          Edit Gift Choice
+        </h2>
+        {% if request.user.is_superuser %}
+        <a href="{% url 'boishakh_catalogs' %}" class="button button--sm button--primary">Back</a>
+        {% else %}
+        <a href="{% url 'view_boishakh_catalogs' %}" class="button button--sm button--primary">Back</a>
+        {% endif %}
+    </div>
+
+    <div id="main-container" class="border border-border p-4 rounded-md">
+        <div class="form-container">
+            <div class="form-header">
+                <form id="uploadForm" method="post" class="flex flex-col gap-6" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-item">
+                        <label class="label" for="dr_id">Doctor RPL ID</label>
+                        <input 
+                            type="text"
+                            id="dr_id"
+                            name="dr_id"
+                            maxlength="10"
+                            class="input"
+                            required
+                            placeholder="Enter Doctor RPL ID"
+                            value="{{ obj.dr_id }}"
+                        />
+                    </div>
+
+                    <div class="form-item">
+                        <label class="label" for="dr_name">Doctor Name</label>
+                        <input 
+                            type="text"
+                            id="dr_name"
+                            name="dr_name"
+                            maxlength="100"
+                            class="input"
+                            required
+                            placeholder="Enter Doctor Name"
+                            value="{{ obj.dr_name }}"
+                        />
+                    </div>
+
+                    <div class="form-item">
+                      <label class="label" for="size">Select Size</label>
+                      <select data-value="{{obj.size}}" id="seleted" class="input" id="size" name="size">
+                        <option value="SM">SM/38</option>
+                        <option value="L">L/40</option>
+                        <option value="XL">XL/42</option>
+                        <option value="XXL">XXL/44</option>
+                        <option value="XXXL">XXXL/46</option>
+                      </select>
+
+                    </div>
+
+                    <div class="form-item">
+                        <label class="label" for="select_book">Select Gift Items</label>
+                        
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                            <div class="thumbnail cursor-pointer rounded-xl overflow-hidden border border-gray-300" data-image="1" onclick="selectThumbnail(this)">
+                              <p class="text-center text-xs text-gray-600 mt-2 p-2">1</p>
+                              <img src="{% static 'images/1.jpeg' %}" alt="pureit" class="object-cover w-full p-2">
+                            </div>
+                       
+                            <div class="thumbnail cursor-pointer rounded-xl overflow-hidden border border-gray-300" data-image="2" onclick="selectThumbnail(this)">
+                              <p class="text-center text-xs text-gray-600 mt-2 p-2">2</p>
+                              <img src="{% static 'images/2.jpeg' %}" alt="pureit" class="object-cover w-full p-2">
+                            </div>
+                       
+                            <div class="thumbnail cursor-pointer rounded-xl overflow-hidden border border-gray-300" data-image="3" onclick="selectThumbnail(this)">
+                              <p class="text-center text-xs text-gray-600 mt-2 p-2">3</p>
+                              <img src="{% static 'images/3.jpeg' %}" alt="pureit" class="object-cover w-full p-2">
+                            </div>
+                       
+                            <div class="thumbnail cursor-pointer rounded-xl overflow-hidden border border-gray-300" data-image="4" onclick="selectThumbnail(this)">
+                              <p class="text-center text-xs text-gray-600 mt-2 p-2">4</p>
+                              <img src="{% static 'images/4.jpeg' %}" alt="pureit" class="object-cover w-full p-2">
+                            </div>
+                       
+                            <div class="thumbnail cursor-pointer rounded-xl overflow-hidden border border-gray-300" data-image="5" onclick="selectThumbnail(this)">
+                              <p class="text-center text-xs text-gray-600 mt-2 p-2">5</p>
+                              <img src="{% static 'images/5.jpeg' %}" alt="pureit" class="object-cover w-full p-2">
+                            </div>
+                       
+                            <div class="thumbnail cursor-pointer rounded-xl overflow-hidden border border-gray-300" data-image="6" onclick="selectThumbnail(this)">
+                              <p class="text-center text-xs text-gray-600 mt-2 p-2">6</p>
+                              <img src="{% static 'images/6.jpeg' %}" alt="pureit" class="object-cover w-full p-2">
+                            </div>
+                       
+                            <div class="thumbnail cursor-pointer rounded-xl overflow-hidden border border-gray-300" data-image="7" onclick="selectThumbnail(this)">
+                              <p class="text-center text-xs text-gray-600 mt-2 p-2">7</p>
+                              <img src="{% static 'images/7.jpeg' %}" alt="pureit" class="object-cover w-full p-2">
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" id="selected_image" name="gifts">
+
+                    <button type="submit" class="button button--md button--primary" onclick="submitForm(event)">
+                        Submit
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function updateHiddenInput() {
+    const selected = [...document.querySelectorAll('.thumbnail.selected')]
+      .map(el => el.dataset.image);
+
+    document.getElementById('selected_image').value = selected.join(',');
+  }
+
+  function selectThumbnail(element) {
+    element.classList.toggle('selected');
+    updateHiddenInput();
+  }
+
+  // Auto-select on edit
+  document.addEventListener('DOMContentLoaded', function () {
+    const currentGift = "{{ obj.gifts|escapejs }}";  // e.g. "1,3,5"
+
+    if (!currentGift) return;
+
+    const giftList = currentGift.split(',');
+
+    giftList.forEach(gift => {
+      const thumb = document.querySelector(
+        `.thumbnail[data-image="${gift.trim()}"]`
+      );
+      if (thumb) {
+        thumb.classList.add('selected');
+      }
+    });
+
+    updateHiddenInput();
+  });
+
+  const selected = document.getElementById('seleted')
+  const defaultValue = (selected.getAttribute('data-value'))
+  selected.value = defaultValue
+
+  function submitForm(event) {
+    event.preventDefault();
+
+    const selectedValue = document.getElementById('selected_image').value;
+    const drId = document.getElementById('dr_id').value.trim();
+    const drName = document.getElementById('dr_name').value.trim();
+
+    if (!drId || !drName) {
+      alert('Please fill out all fields.');
+      return;
+    }
+
+    if (!selectedValue) {
+      alert('Please select at least one gift.');
+      return;
+    }
+
+    document.getElementById('uploadForm').submit();
+  }
+</script>
+{% endblock content %}
