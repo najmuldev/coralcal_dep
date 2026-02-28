@@ -1,23 +1,24 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import PohelaBoishakhCatalog, Territory
-import csv, os, shutil
+import  os, shutil
 from django.conf import settings
-from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.templatetags.static import static
 
 # map gift names
 IMAGE_TO_GIFT = {
-    'image1': 'Pureit Classic 23 L',
-    'image2': 'Philips Blender 450W Daily Collection (HR2058/91)',
-    'image3': 'Smart Watch Fastrack Reflex Rave FX',
-    'image4': 'Kiam Marble Coated 7 pc Set',
-    'image5': 'International Scientific Conference Registration'
+    'image1': '1',
+    'image2': '2',
+    'image3': '3',
+    'image4': '4',
+    'image5': '5',
+    'image6': '6',
+    'image7': '7',
 }
 # Create your views here.
 @login_required
-def gift_choice(request):
+def boishakh_choice(request):
     """
     Render the gift catalogs page.
     """
@@ -65,7 +66,7 @@ def gift_choice(request):
         })
         
 @login_required 
-def view_gift_catalogs(request):
+def view_boishakh_catalogs(request):
     territory_id = request.user.username
     try:
         obj = PohelaBoishakhCatalog.objects.filter(territory__territory=territory_id)
@@ -91,7 +92,7 @@ def view_gift_catalogs(request):
 
 
 @login_required
-def delete_gift_catalog(request, id):
+def delete_boishakh_catalog(request, id):
     """
     Delete a gift catalog entry and its associated conference image folder if applicable.
     """
@@ -125,62 +126,41 @@ def delete_gift_catalog(request, id):
     return redirect('gift_choice')
 
 @login_required
-def edit_gift_catalog(request, id):
+def edit_boishakh_catalog(request, id):
     try:
         obj = PohelaBoishakhCatalog.objects.get(id=id)
-        old_gift = obj.gift 
 
         if request.method == 'POST':
             dr_id = request.POST.get('dr_id')
             dr_name = request.POST.get('dr_name')
-            selected_image = request.POST.get('selected_image')
-            conference_image = request.FILES.get('conference_image')
+            selected_image = request.POST.get('gifts')
+            size = request.POST.get('size')
 
             if not (dr_id and dr_name and selected_image):
                 messages.error(request, "All fields are required and a gift must be selected.")
-                return redirect('edit_gift_catalog', id=id)
-
-            new_gift = IMAGE_TO_GIFT.get(selected_image)
+                return redirect('edit_boishakh_catalog', id=id)
 
             
-            if (
-                old_gift == 'International Scientific Conference Registration' and 
-                new_gift != 'International Scientific Conference Registration' and 
-                obj.conference_image
-            ):
-                folder_path = os.path.dirname(obj.conference_image.path)
-                safe_root = os.path.join(settings.MEDIA_ROOT, 'conference_images')
+            print(selected_image)
 
-                if os.path.commonpath([safe_root]) == os.path.commonpath([safe_root, folder_path]):
-                    if os.path.isdir(folder_path):
-                        shutil.rmtree(folder_path)
-                        print(f"[Deleted] Conference image folder: {folder_path}")
-                        obj.conference_image = None  # Clean the DB field too
-                    else:
-                        print(f"[Skip] Folder not found: {folder_path}")
-                else:
-                    print(f"[Blocked] Unsafe folder path skipped: {folder_path}")
-
-            # Update fields
+            # # Update fields
             obj.dr_id = dr_id
             obj.dr_name = dr_name
-            obj.gift = new_gift
-
-            if new_gift == 'International Scientific Conference Registration' and conference_image:
-                obj.conference_image = conference_image
+            obj.gifts = selected_image
+            obj.size=size
 
             obj.save()
             messages.success(request, "Gift catalog entry updated successfully.")
             if request.user.is_superuser:
-                return redirect('gift_catalogs')
-            return redirect('gift_choiced')
+                return redirect('boishakh_catalogs')
+            return redirect('boishakh_choice')
         
-        return render(request, 'edit_gift_choice.html', {
+        return render(request, 'edit_boishakh_choice.html', {
             'obj': obj
         })
 
     except PohelaBoishakhCatalog.DoesNotExist:
         messages.error(request, "Gift catalog entry not found.")
         if request.user.is_superuser:
-            return redirect('gift_catalogs')
-        return redirect('gift_choice')
+            return redirect('boishakh_catalogs')
+        return redirect('boishakh_choice')

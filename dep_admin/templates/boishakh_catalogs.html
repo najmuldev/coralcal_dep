@@ -211,7 +211,7 @@
                       <td class="table-cell">{{item.size}}</td>
                       <td class="table-cell">{{item.gifts}}</td>
                       <td class="table-cell">
-                          <a class="button button--icon button--outline" href="{% url 'edit_gift_catalog' item.id %}"><i data-lucide="edit" class="text-primary"></i></a>
+                          <a class="button button--icon button--outline" href="{% url 'edit_boishakh_catalog' item.id %}"><i data-lucide="edit" class="text-primary"></i></a>
                           
                           <a class="button button--icon button--outline" onclick="confirmDelete('{{item.id}}','{{item.dr_name}}', '{{item.territory.territory}}')"><i data-lucide="trash" class="text-destructive"></i></a>
                       </td>
