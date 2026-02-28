@@ -757,3 +757,97 @@ def delete_doctor_development_data(request, id):
         if request.user.is_superuser:
             return redirect('doctor_development')
         return redirect('home')
+    
+
+# pohela boishakh catalog
+@login_required 
+def download_boishakh_catalogs(request):
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = "Pohela Boishakh Catalogs Data"
+    headers = ['Dr. RPL ID', 'Dr. Name', 'Territory ID', 'Territory Name', 'Region', 'Zone', 'Gift Choices', "Size"]
+    worksheet.append(headers)
+    data = utils.filter_boishakh_catalogs_data(request)
+    image_paths = set()
+    for obj in data:
+        row = [
+            obj.dr_id,
+            obj.dr_name,
+            obj.territory.territory,
+            obj.territory.territory_name,
+            obj.territory.region_name,
+            obj.territory.zone_name,
+            obj.gifts,
+            obj.size,
+        ]
+        worksheet.append(row)
+        if obj.conference_image:
+            image_path = os.path.join(settings.MEDIA_ROOT, obj.conference_image.name)
+            if os.path.exists(image_path):
+                image_paths.add(image_path)
+    buffer = BytesIO()
+    workbook.save(buffer)
+    buffer.seek(0)
+    
+    zip_buffer = BytesIO()
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for image_path in image_paths:
+            relative_path = os.path.relpath(image_path, settings.MEDIA_ROOT)
+            zip_file.write(image_path, relative_path)
+        # Add the Excel file
+        zip_file.writestr('boishakh_catalogs_data.xlsx', buffer.getvalue())
+
+    zip_buffer.seek(0)
+    response = HttpResponse(zip_buffer, content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename="boishakh_catalogs_data_bundle.zip"'
+    return response
+
+@login_required 
+def export_boishakh_catalogs(request):
+    # Create a new workbook and add a worksheet
+    workbook = openpyxl.Workbook()
+    worksheet = workbook.active
+    worksheet.title = "Pohela Boishakh Catalogs Data"
+    
+    # Define the header row
+    headers = ['Dr. RPL ID', 'Dr. Name', 'Territory ID', 'Territory Name', 'Region', 'Zone', 'Gift Choices', "Size"]
+    worksheet.append(headers)
+    data = utils.filter_boishakh_catalogs_data(request)
+    # Populate the worksheet with data
+    for obj in data:
+        row = [
+            obj.dr_id,
+            obj.dr_name,
+            obj.territory.territory,
+            obj.territory.territory_name,
+            obj.territory.region_name,
+            obj.territory.zone_name,
+            obj.gifts,
+            obj.size,
+        ]
+        worksheet.append(row)
+    
+    # Save the workbook to a BytesIO object
+    buffer = BytesIO()
+    workbook.save(buffer)
+    buffer.seek(0)
+    
+    # Create a response with the Excel file
+    response = HttpResponse(buffer.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="gift_catalogs_data.xlsx"'
+    
+    return response
+
+@login_required
+def boishakh_catalogs(request):
+    if request.method == 'GET':
+        search_query = request.GET.get('search', '')
+        page_number = int(request.GET.get('page') or 1)
+        per_page = int(request.GET.get("per_page") or 10)
+        sort = request.GET.get("sort", "territory")
+        direction = request.GET.get("direction", "asc")
+        # Get data using the utils function
+        data = utils.filter_boishakh_catalogs_data(request)
+        paginator = Paginator(data, per_page)
+        page_obj = paginator.get_page(page_number)    
+    return render(request, 'boishakh_catalogs.html',{'data':page_obj, 'search_query':search_query, 'per_page':per_page, 'sort':sort, 'direction':direction})  

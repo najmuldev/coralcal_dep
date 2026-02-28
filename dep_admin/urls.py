@@ -28,5 +28,7 @@ urlpatterns = [
     path('doctor_development/', views.doctor_development, name='doctor_development'),
     path('export_doctor_development/', views.export_doctor_development, name='export_doctor_development'),
     path('delete_doctor_development/<int:id>/', views.delete_doctor_development_data, name='delete_doctor_development'),
-
+    path('boishakh_catalogs/', views.boishakh_catalogs, name='boishakh_catalogs'),
+    path('download_boishakh_catalogs', views.download_boishakh_catalogs, name='download_boishakh_catalogs'),
+    path('export_boishakh_catalogs', views.export_boishakh_catalogs, name='export_boishakh_catalogs'),
 ]
