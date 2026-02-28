@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import PohelaBoishakhCatalog, Territory
-import  os, shutil
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.templatetags.static import static
@@ -25,32 +24,32 @@ def boishakh_choice(request):
     if request.method == 'POST':
         dr_id = request.POST.get('dr_id')
         dr_name = request.POST.get('dr_name')
-        selected_image = request.POST.get('selected_image')
+        selected_image = request.POST.get('gifts')
+        size = request.POST.get('size')
 
         if not (dr_id and dr_name and selected_image):
             messages.error(request, "All fields are required and a gift must be selected.")
-            return redirect('gift_choice')
-        gift = IMAGE_TO_GIFT.get(selected_image)
-        conference_image = request.FILES.get('conference_image')
+            return redirect('boishakh_choice')
+
 
         try:
             territory = Territory.objects.get(territory=request.user.username)
             if not territory:
                 messages.error(request, "No territory found.")
-                return redirect('gift_choice')
+                return redirect('boishakh_choice')
             # Save data
             PohelaBoishakhCatalog.objects.create(
                 territory=territory,
                 dr_id=dr_id,
                 dr_name=dr_name,
-                gift=gift,
-                conference_image=conference_image
+                gifts=selected_image,
+                size= size
             )   
             messages.success(request, f"Successfully submitted gift choice for {dr_name}.")
-            return redirect('gift_choice')
+            return redirect('boishakh_choice')
         except Exception as e:
             messages.error(request, f"Error occurred: {str(e)}")
-            return redirect('gift_choice')
+            return redirect('boishakh_choice')
     elif request.method == 'GET':
         territory_id = request.user.username
         try:
@@ -58,37 +57,36 @@ def boishakh_choice(request):
         except PohelaBoishakhCatalog.DoesNotExist:
             obj = None
         count = obj.count() if obj else 0
-        if count >=2 :
-            return redirect('gift_choiced')
-        return render(request, 'gift_choice.html', {
+        if count >=5 :
+            return redirect('view_boishakh_catalogs')
+        return render(request, 'boishakh_choice.html', {
             'obj': obj,
             'count': count
         })
         
-@login_required 
+@login_required
 def view_boishakh_catalogs(request):
     territory_id = request.user.username
-    try:
-        obj = PohelaBoishakhCatalog.objects.filter(territory__territory=territory_id)
-    except PohelaBoishakhCatalog.DoesNotExist:
-        obj = None
-        return redirect('gift_choice')   
+
+    obj = PohelaBoishakhCatalog.objects.filter(
+        territory__territory=territory_id
+    )
+
+    if not obj.exists():
+        return redirect('boishakh_choice')
+
+    # Attach gift list to each object
     for item in obj:
-        gift = item.gift
-        if gift == 'Pureit Classic 23 L':
-            item.img = static('images/pureit.webp')
-        elif gift == 'Philips Blender 450W Daily Collection (HR2058/91)':
-            item.img = static('images/blender.webp')
-        elif gift == 'Smart Watch Fastrack Reflex Rave FX':
-            item.img = static('images/watch.webp') 
-        elif gift == 'Kiam Marble Coated 7 pc Set':
-            item.img = static('images/cookware.jpg') 
-        elif gift == 'International Scientific Conference Registration':
-            item.img = static('images/conference.png')
+        if item.gifts:
+            item.img_list = item.gifts.split(',')
         else:
-            print('No item found')
-            
-    return render(request, 'view_choice.html', {'data':obj})
+            item.img_list = []
+
+    return render(
+        request,
+        'view_boishkah_choice.html',
+        {'data': obj}
+    )
 
 
 @login_required

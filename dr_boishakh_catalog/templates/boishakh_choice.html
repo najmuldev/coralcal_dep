@@ -1,6 +1,6 @@
 {% extends 'base_header.html' %}
 {% load static %}
-{% block head_title %}Edit Pohela Boishakh Gift Choice Form | CoralCal Doctor Engagement Platform{% endblock %}
+{% block head_title %}Gift Choice Form | CoralCal Doctor Engagement Platform{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -8,7 +8,7 @@
     transition: transform 0.3s ease, border-color 0.3s ease;
   }
   .thumbnail.selected {
-    border: 4px solid #3b82f6;
+    border: 2px solid #3b82f6;
     transform: scale(1.05);
   }
 </style>
@@ -21,15 +21,15 @@
   <div class="card">
     <div class="[&_h2]:font-semibold [&_h2]:text-primary [&_h2]:text-lg mb-6 flex justify-between gap-5 text-center ">
         <h2 class="text-2xl font-bold text-primary text-center">
-          Edit Gift Choice
+            Pohela Boishakh Gift Choice Form
         </h2>
-        {% if request.user.is_superuser %}
-        <a href="{% url 'boishakh_catalogs' %}" class="button button--sm button--primary">Back</a>
-        {% else %}
-        <a href="{% url 'view_boishakh_catalogs' %}" class="button button--sm button--primary">Back</a>
-        {% endif %}
+        <a href="{% url 'home' %}" class="button button--sm button--primary">Back</a>
     </div>
-
+    {% if count == 1 %}
+    <div class="mb-4">
+      <p>You Have Uploaded One Doctor Data. <a href="{% url 'view_boishakh_catalogs' %}" class="button button--sm button--primary">View</a></p>
+    </div>
+    {% endif %}
     <div id="main-container" class="border border-border p-4 rounded-md">
         <div class="form-container">
             <div class="form-header">

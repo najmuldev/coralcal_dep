@@ -3,22 +3,15 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from knowledge_series.models import BookWishes
 from doctor_development.models import DoctorDevelopment
-from dr_gift_catalogs.models import DrGiftCatalog
-from django.db.models import Q
 from django.core.paginator import Paginator
 import openpyxl , os, zipfile, shutil, json
 from io import BytesIO
 from django.http import HttpResponse
-from core.models import Territory, UserProfile
 from django.conf import settings
-from anniversary.models import Anniversary
-from green_corner.models import GreenCorner
 from .models import AccessControl
-from doctors_opinion.models import DoctorOpinion
 from openpyxl.styles import Alignment
 from doctors_data.models import Doctor, Chamber
 from . import utils
-from doctors_ai_course.models import DoctorAiCourse
 import tempfile
 import os
 from django.core.management import call_command
@@ -781,10 +774,7 @@ def download_boishakh_catalogs(request):
             obj.size,
         ]
         worksheet.append(row)
-        if obj.conference_image:
-            image_path = os.path.join(settings.MEDIA_ROOT, obj.conference_image.name)
-            if os.path.exists(image_path):
-                image_paths.add(image_path)
+
     buffer = BytesIO()
     workbook.save(buffer)
     buffer.seek(0)
