@@ -99,21 +99,6 @@ def delete_boishakh_catalog(request, id):
     try:
         obj = PohelaBoishakhCatalog.objects.get(id=id)
 
-        # Check and delete the conference image folder (if gift was "Conference")
-        if obj.gift == 'International Scientific Conference Registration' and obj.conference_image:
-            folder_path = os.path.dirname(obj.conference_image.path)
-
-            # Safety check to prevent deleting unintended folders
-            safe_root = os.path.join(settings.MEDIA_ROOT, 'conference_images')
-            if os.path.commonpath([safe_root]) == os.path.commonpath([safe_root, folder_path]):
-                if os.path.isdir(folder_path):
-                    shutil.rmtree(folder_path)
-                    print(f"Deleted folder: {folder_path}")
-                else:
-                    print(f"Folder not found: {folder_path}")
-            else:
-                print(f"Unsafe folder path skipped: {folder_path}")
-
         obj.delete()
         messages.success(request, "Gift catalog entry deleted successfully.")
 
@@ -122,8 +107,8 @@ def delete_boishakh_catalog(request, id):
     except Exception as e:
         messages.error(request, f"Error while deleting: {str(e)}")
     if request.user.is_superuser:
-        return redirect('gift_catalogs')
-    return redirect('gift_choice')
+        return redirect('boishakh_catalogs')
+    return redirect('boishakh_choice')
 
 @login_required
 def edit_boishakh_catalog(request, id):
