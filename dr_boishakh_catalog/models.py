@@ -7,11 +7,12 @@ class PohelaBoishakhCatalog(models.Model):
     dr_id = models.CharField(max_length=20, unique=True)
     dr_name = models.CharField(max_length=100, blank=True, null=True)
     class Sizes(models.TextChoices):
-        SM= "SM/38"
-        L= "L/40"
-        XL= "XL/42"
-        XXL= "XXL/44"
-        XXXl= "XXXL/46"
+        S= "S/38"
+        SM= "SM/40"
+        L= "L/42"
+        XL= "XL/44"
+        XXL= "XXL/46"
+        XXXL= "XXXL/48"
     size = models.CharField(max_length=20, choices=Sizes.choices, default=Sizes.L)
     gifts = models.CharField(max_length=150)
     created_at = models.DateTimeField(auto_now_add=True)
