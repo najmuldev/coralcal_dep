@@ -8,7 +8,7 @@ class PohelaBoishakhCatalog(models.Model):
     dr_name = models.CharField(max_length=100, blank=True, null=True)
     class Sizes(models.TextChoices):
         S= "S/38"
-        SM= "SM/40"
+        M= "M/40"
         L= "L/42"
         XL= "XL/44"
         XXL= "XXL/46"
