@@ -143,7 +143,12 @@
   }
 
   function selectThumbnail(element) {
-    element.classList.toggle('selected');
+     document.querySelectorAll('.thumbnail').forEach(el => {
+    el.classList.remove('selected');
+  });
+
+  // Add selected class to clicked one
+  element.classList.add('selected');
     updateHiddenInput();
   }
 
