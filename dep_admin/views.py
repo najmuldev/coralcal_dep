@@ -455,6 +455,7 @@ def doctors_data(request):
                     "district": ch.district,
                     "upazila": ch.upazila,
                     "thana": ch.thana,
+                    "visiting_days": ch.visiting_days or ''
                 })
             doctor.chambers_json = json.dumps(chambers_list)
 
