@@ -24,6 +24,7 @@ class Chamber(models.Model):
     district = models.CharField(max_length=255)
     upazila = models.CharField(max_length=255)
     thana = models.CharField(max_length=255)
+    visiting_days = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
