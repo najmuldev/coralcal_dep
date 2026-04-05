@@ -3,6 +3,7 @@ from django.contrib import messages
 from .models import PlantModule
 from core.models import Territory
 from django.contrib.auth.decorators import login_required
+from core.models import UserProfile
 
 # Create your views here.
 @login_required
@@ -15,22 +16,17 @@ def form(request):
         designation = request.POST.get('dr_designation')
         location = request.POST.get('location')
         first_flower_plant = request.POST.get('first_flower_plant')
-        second_flower_plant = request.POST.get('second_flower_plant')
-        third_flower_plant = request.POST.get('third_flower_plant')
-        first_medicinal_plant = request.POST.get('first_medicinal_plant')
-        second_medicinal_plant = request.POST.get('second_medicinal_plant')
         
         fields = (
             dr_id, dr_name, specialty, designation, location, 
-            first_flower_plant, second_flower_plant, third_flower_plant, 
-            first_medicinal_plant, second_medicinal_plant
+            first_flower_plant
         )
         
         if not all (fields):
             messages.error(request, "Please fill in all the fields.")
             return redirect('p_form')
         
-        plants = f'{first_flower_plant}, {second_flower_plant}, {third_flower_plant}, {first_medicinal_plant}, {second_medicinal_plant}'
+        plants = f'{first_flower_plant}'
         
         try:
             territory= Territory.objects.get(territory=territory_id)
@@ -91,10 +87,6 @@ def edit(request, instance_id):
             obj = PlantModule.objects.get(id=instance_id)
             data = {}
             data['first_flower_plant'] = obj.plants.split(',')[0]
-            data['second_flower_plant'] = obj.plants.split(',')[1].strip()
-            data['third_flower_plant'] = obj.plants.split(',')[2].strip()
-            data['first_medicinal_plant'] = obj.plants.split(',')[3].strip()
-            data['second_medicinal_plant'] = obj.plants.split(',')[4].strip()
             data['dr_id'] = obj.dr_id
             data['dr_name'] = obj.dr_name
             data['specialty'] = obj.specialty
@@ -102,10 +94,10 @@ def edit(request, instance_id):
             data['location'] = obj.location
             return render(request, 'p_edit.html', {'obj': data})
         except PlantModule.DoesNotExist:
-            messages.error(request, "Plant Module data not found.")
+            messages.error(request, "HerStory Plant Catalogue data not found.")
             return redirect('p_history')
         except Exception as e:
-            messages.error(request, 'Error getting Plant Module data: ' + str(e))
+            messages.error(request, 'Error getting HerStory Plant Catalogue data: ' + str(e))
             return redirect('p_history')
         
     if request.method == 'POST':
@@ -117,32 +109,82 @@ def edit(request, instance_id):
             obj.designation = request.POST.get('dr_designation')
             obj.location = request.POST.get('location')
             first_flower_plant = request.POST.get('first_flower_plant')
-            second_flower_plant = request.POST.get('second_flower_plant')
-            third_flower_plant = request.POST.get('third_flower_plant')
-            first_medicinal_plant = request.POST.get('first_medicinal_plant')
-            second_medicinal_plant = request.POST.get('second_medicinal_plant')
-            plants = f'{first_flower_plant}, {second_flower_plant}, {third_flower_plant}, {first_medicinal_plant}, {second_medicinal_plant}'
+            plants = f'{first_flower_plant}'
             obj.plants = plants
             obj.save()
-            messages.success(request, "Plant Module data updated successfully.")
-            return redirect('p_history')
+            messages.success(request, "HerStory Plant Catalogue data updated successfully.")
+            if not request.user.is_superuser:
+                try:
+                    profile = request.user.userprofile
+                    if profile.user_type == 'zone' or profile.user_type == 'region':
+                        return redirect('plant')
+                    else:
+                        return redirect('p_history')
+                except UserProfile.DoesNotExist:
+                    return redirect('p_history')
+            return redirect('plant')
         except PlantModule.DoesNotExist:
-            messages.error(request, "Plant Module data not found.")
-            return redirect('p_history')
+            messages.error(request, "HerStory Plant Catalogue data not found.")
+            if not request.user.is_superuser:
+                try:
+                    profile = request.user.userprofile
+                    if profile.user_type == 'zone' or profile.user_type == 'region':
+                        return redirect('plant')
+                    else:
+                        return redirect('p_history')
+                except UserProfile.DoesNotExist:
+                    return redirect('p_history')
+            return redirect('plant')
         except Exception as e:
-            messages.error(request, 'Error updating Plant Module data: ' + str(e))
-            return redirect('p_history')
+            messages.error(request, 'Error updating HerStory Plant Catalogue data: ' + str(e))
+            if not request.user.is_superuser:
+                try:
+                    profile = request.user.userprofile
+                    if profile.user_type == 'zone' or profile.user_type == 'region':
+                        return redirect('plant')
+                    else:
+                        return redirect('p_history')
+                except UserProfile.DoesNotExist:
+                    return redirect('p_history')
+            return redirect('plant')
         
 @login_required
 def delete(request, instance_id):
     try:
         obj = PlantModule.objects.get(id=instance_id)
         obj.delete()
-        messages.success(request, "Plant Module data deleted successfully.")
-        return redirect('p_history')
+        messages.success(request, "HerStory Plant Catalogue data deleted successfully.")
+        if not request.user.is_superuser:
+            try:
+                profile = request.user.userprofile
+                if profile.user_type == 'zone' or profile.user_type == 'region':
+                    return redirect('plant')
+                else:
+                    return redirect('p_history')
+            except UserProfile.DoesNotExist:
+                return redirect('p_history')
+        return redirect('plant')
     except PlantModule.DoesNotExist:
-        messages.error(request, "Plant Module data not found.")
-        return redirect('p_history')
+        messages.error(request, "HerStory Plant Catalogue data not found.")
+        if not request.user.is_superuser:
+            try:
+                profile = request.user.userprofile
+                if profile.user_type == 'zone' or profile.user_type == 'region':
+                    return redirect('plant')
+                else:
+                    return redirect('p_history')
+            except UserProfile.DoesNotExist:
+                return redirect('p_history')
+        return redirect('plant')
     except Exception as e:
-        messages.error(request, 'Error deleting Plant Module data: ' + str(e))
-        return redirect('p_history')
+        messages.error(request, 'Error deleting HerStory Plant Catalogue data: ' + str(e))
+        if not request.user.is_superuser:
+            try:
+                profile = request.user.userprofile
+                if profile.user_type == 'zone' or profile.user_type == 'region':
+                    return redirect('plant')
+                else:
+                    return redirect('p_history')
+            except UserProfile.DoesNotExist:
+                return redirect('p_history')
+        return redirect('plant')

@@ -16,6 +16,14 @@
     >
       <!-- nav list -->
       <nav class="flex flex-col gap-1 px-2">
+        <a class="navlist" href="/dep/admin/boishakh_catalogs"
+          ><i data-lucide="gift"></i>
+          <span class="toggle">Pohela Boishakh Catalogs</span></a
+        >
+        <a class="navlist" href="/dep/admin/doctor_development"
+          ><i data-lucide="ticket"></i>
+          <span class="toggle">Doctor Development</span></a
+        >
         <a class="navlist" href="/dep/admin/knowledge_series"
           ><i data-lucide="book-open"></i>
           <span class="toggle">Knowledge Series</span></a
@@ -43,7 +51,15 @@
         >
         <a class="navlist" href="/dep/admin/doctors_ai_course"
           ><i data-lucide="brain-circuit"></i>
+          <span class="toggle">AI for Doctors Old</span></a
+        >
+        <a class="navlist" href="/dep/admin/doctors_ai_course2"
+          ><i data-lucide="brain-circuit"></i>
           <span class="toggle">AI for Doctors</span></a
+        >
+        <a class="navlist" href="/dep/admin/plant"
+          ><i data-lucide="tree-palm"></i>
+          <span class="toggle">HerStory Plant Catalogue</span></a
         >
 
         {% if request.user.is_superuser %}

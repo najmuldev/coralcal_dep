@@ -7,6 +7,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('core.urls')),
     path('ks', include('knowledge_series.urls')),
+    path('dd/', include('doctor_development.urls')),
     path('gift/', include('dr_gift_catalogs.urls')),
     path('dep/admin/', include('dep_admin.urls')),
     path('anniversary/', include('anniversary.urls')),
@@ -15,4 +16,6 @@ urlpatterns = [
     path('doctors_data/', include('doctors_data.urls')),
     path('dac/', include('doctors_ai_course.urls')),
     path('plant/', include('plant_module.urls')),
+    path('dac2/', include('doctors_ai_course2.urls')),
+    path('boishakh-gift/', include('dr_boishakh_catalog.urls')),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
