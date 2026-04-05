@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from core.models import UserProfile
 from core.utils import redirect_url
 from django.urls import reverse
+from django.http import HttpResponse
 
 # Create your views here.
 def dd_form(request):
@@ -20,6 +21,9 @@ def dd_form(request):
         district = request.POST.getlist('district[]')
         upazila = request.POST.getlist('upazila[]')
         thana = request.POST.getlist('thana[]')
+        visiting_days = request.POST.getlist('visiting_days[]')
+        finalVisitingData = request.POST.get('final_visiting_data')
+        finalVisitingDataList = finalVisitingData.split(' || ') if finalVisitingData else []
 
         # Basic validation
         if not all([dr_id, dr_name, dr_speciality, dr_designation]):
@@ -44,6 +48,7 @@ def dd_form(request):
                 'district': district[i],
                 'upazila': upazila[i],
                 'thana': thana[i],
+                'visiting_days': finalVisitingDataList[i] if i < len(finalVisitingDataList) else ''
             })
 
         doctor = Doctor.objects.create(

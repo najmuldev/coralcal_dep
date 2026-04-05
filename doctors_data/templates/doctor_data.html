@@ -193,6 +193,24 @@ function addChamber() {
       <input type="text" name="thana[]" class="input" placeholder="Enter thana" required />
     </div>
 
+    <!-- visiting hours -->
+    <h4>Visiting Hours</h4>
+
+    <div class="visiting-days">
+      ${["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"].map(day => `
+        <div class="flex items-center gap-2">
+          <input type="checkbox" name="visiting_days[]" value="${day}" onchange="toggleTimeInput(this)">
+          <label>${day}</label>
+        </div>
+        
+        <div class="time-input hidden ml-6">
+          <input type="text" name="visiting_time_${day}[]" 
+                class="input mt-1" 
+                placeholder="07 AM - 12 PM, 03 PM - 11 PM">
+        </div>
+      `).join("")}
+    </div>
+
     <button type="button" class="text-red-500 hover:text-red-700 self-end" onclick="removeChamber(this)">
       <i data-lucide="x-circle"></i> Remove
     </button>
@@ -210,6 +228,18 @@ function addChamber() {
 
   if (typeof lucide !== 'undefined') lucide.createIcons();
   setupDivisionListeners();
+}
+
+function toggleTimeInput(checkbox) {
+  const container = checkbox.closest('div');
+  const timeInput = container.nextElementSibling;
+
+  if (checkbox.checked) {
+    timeInput.classList.remove('hidden');
+  } else {
+    timeInput.classList.add('hidden');
+    timeInput.querySelector('input').value = '';
+  }
 }
 
 function removeChamber(button) {
@@ -279,9 +309,9 @@ function closeFlyingError() {
 
 function submitForm(event) {
   event.preventDefault();
+
   const drId = document.getElementById('dr_id').value.trim();
   const drName = document.getElementById('dr_name').value.trim();
-  // const drSpecialty = document.getElementById('dr_speciality').value.trim();
   const drSpecialty = document.querySelector('input[name="dr_speciality"]:checked');
   const drDesignation = document.getElementById('dr_designation').value.trim();
 
@@ -290,22 +320,93 @@ function submitForm(event) {
   const districts = document.querySelectorAll('[name="district[]"]');
   const upazilas = document.querySelectorAll('[name="upazila[]"]');
   const thanas = document.querySelectorAll('[name="thana[]"]');
+  const chambers = document.querySelectorAll('#indication-wrapper > div');
 
-  const valid = [
-    drId, drName, drSpecialty, drDesignation
-  ].every(v => v !== '') &&
+  // ===============================
+  // Visiting Hours Processing + Validation
+  // ===============================
+  let finalVisitingData = [];
+  let isValidVisiting = true;
+
+  chambers.forEach((chamber, index) => {
+    const days = chamber.querySelectorAll('input[name="visiting_days[]"]:checked');
+
+    if (days.length === 0) {
+      showFlyingError(`Please select at least one visiting day for chamber ${index + 1}`);
+      isValidVisiting = false;
+      return;
+    }
+
+    let chamberSchedule = [];
+
+    days.forEach(dayCheckbox => {
+      const day = dayCheckbox.value;
+      const timeInput = chamber.querySelector(`input[name="visiting_time_${day}[]"]`);
+
+      if (!timeInput || timeInput.value.trim() === '') {
+        showFlyingError(`Please enter time for ${day} (Chamber ${index + 1})`);
+        isValidVisiting = false;
+      } else {
+        chamberSchedule.push(`${day}: ${timeInput.value.trim()}`);
+      }
+    });
+
+    finalVisitingData.push(chamberSchedule.join(' ; '));
+  });
+
+  if (!isValidVisiting) return;
+
+  // ===============================
+  // Create Hidden Input (Final Data)
+  // ===============================
+  let hiddenInput = document.getElementById('final_visiting_data');
+
+  if (!hiddenInput) {
+    hiddenInput = document.createElement('input');
+    hiddenInput.type = 'hidden';
+    hiddenInput.name = 'final_visiting_data';
+    hiddenInput.id = 'final_visiting_data';
+    document.getElementById('uploadForm').appendChild(hiddenInput);
+  }
+
+  hiddenInput.value = finalVisitingData.join(' || ');
+
+  // ===============================
+  // General Validation
+  // ===============================
+  const valid =
+    drId !== '' &&
+    drName !== '' &&
+    drDesignation !== '' &&
+    drSpecialty !== null &&
     [...chamberAddresses].every(e => e.value.trim() !== '') &&
     [...chamberPhones].every(e => /^01\d{9}$/.test(e.value.trim())) &&
-    [...districts, ...upazilas, ...thanas].every(e => e.value.trim() !== '');
+    [...districts].every(e => e.value.trim() !== '') &&
+    [...upazilas].every(e => e.value.trim() !== '') &&
+    [...thanas].every(e => e.value.trim() !== '');
 
   if (!valid) {
+    console.log('Validation failed');
+    console.log('Final Visiting Data:', hiddenInput.value);
+    console.log(valid);
+    console.log('Doctor ID:', drId);
+    console.log('Doctor Name:', drName);
+    console.log('Doctor Specialty:', drSpecialty ? drSpecialty.value : null);
+    console.log('Doctor Designation:', drDesignation);
+      [...chamberAddresses].forEach((e, i) => console.log(`Chamber ${i + 1} Address:`, e.value.trim()));
+      [...chamberPhones].forEach((e, i) => console.log(`Chamber ${i + 1} Phone:`, e.value.trim()));
+      [...districts].forEach((e, i) => console.log(`Chamber ${i + 1} District:`, e.value.trim()));
+      [...upazilas].forEach((e, i) => console.log(`Chamber ${i + 1} Upazila:`, e.value.trim()));
+      [...thanas].forEach((e, i) => console.log(`Chamber ${i + 1} Thana:`, e.value.trim()));
     showFlyingError("Please fill out all required doctor and chamber fields correctly.");
     return;
   }
 
+  // ===============================
+  // Submit Form
+  // ===============================
   document.getElementById('uploadForm').submit();
 }
-
 function getAllDistricts() {
     return [
       "Bagerhat", "Bandarban", "Barguna", "Barisal", "Bhola", "Bogura",
