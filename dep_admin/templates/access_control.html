@@ -125,6 +125,16 @@
             </label>
           </div>
 
+
+
+          <div>
+            <label class="inline-flex items-center cursor-pointer">
+              <span class="text-sm font-medium text-black w-50">Gift Catalogs 2026</span>
+              <input type="checkbox" id="gift_catalogs_2" class="sr-only peer toggle-switch" {% if access_control.gift_catalogs_2 %}checked{% endif %}>
+              <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 rounded-full peer peer-checked:bg-green-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full peer-checked:after:border-white"></div>
+            </label>
+          </div>
+
         </div>
       </form>
     </div>
@@ -150,6 +160,7 @@
       plant_module: document.getElementById('plantModuleToggle')?.checked || false,
       doctor_development: document.getElementById('drToggle')?.checked || false,
       dr_boishakh_catalog: document.getElementById('boishakhToggle')?.checked || false,
+      gift_catalogs_2: document.getElementById('gift_catalogs_2')?.checked || false,
     };
   }
 
