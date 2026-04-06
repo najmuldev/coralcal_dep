@@ -120,8 +120,11 @@ def filter_anniversary_data(request):
         data = data.order_by(sort_by)
     return data
 
-def filter_gift_catalogs_data(request):
-    data = DrGiftCatalog.objects.select_related('territory').all()
+def filter_gift_catalogs_data(request, model=None):
+    if model:
+        data = model.objects.select_related('territory').all()
+    else:
+        data = DrGiftCatalog.objects.select_related('territory').all()
     # Filter based on the User's profile.
     try:
         profile = request.user.userprofile

@@ -1,5 +1,6 @@
 from django.urls import path
 from dep_admin import views
+from dep_admin import view
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -31,4 +32,6 @@ urlpatterns = [
     path('boishakh_catalogs/', views.boishakh_catalogs, name='boishakh_catalogs'),
     path('download_boishakh_catalogs', views.download_boishakh_catalogs, name='download_boishakh_catalogs'),
     path('export_boishakh_catalogs', views.export_boishakh_catalogs, name='export_boishakh_catalogs'),
+    path('gift_catalogs_2026/', view.gift_catalogs, name='gift_catalogs_2026'),
+    path('export_gift_catalogs_2026/', view.export_gift_catalogs, name='export_gift_catalogs_2026'),
 ]
