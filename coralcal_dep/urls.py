@@ -18,4 +18,5 @@ urlpatterns = [
     path('plant/', include('plant_module.urls')),
     path('dac2/', include('doctors_ai_course2.urls')),
     path('boishakh-gift/', include('dr_boishakh_catalog.urls')),
+    path('gift_catalogs_2/', include('git_catalogs_2.urls')),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

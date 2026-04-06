@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'plant_module',
     'doctors_ai_course2',
     'doctor_development',
-    "dr_boishakh_catalog"
+    "dr_boishakh_catalog",
+    'gift_catalogs_2',
 ]
 
 MIDDLEWARE = [
