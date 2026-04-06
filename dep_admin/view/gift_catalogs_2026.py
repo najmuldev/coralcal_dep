@@ -39,7 +39,7 @@ def export_gift_catalogs(request):
     # Define the header row
     headers = ['Dr. RPL ID', 'Dr. Name', 'Territory ID', 'Territory Name', 'Region', 'Zone', 'Gift Choice']
     worksheet.append(headers)
-    data = utils.filter_gift_catalogs_data(request, data=GiftCatalog2)
+    data = utils.filter_gift_catalogs_data(request, model=GiftCatalog2)
     # Populate the worksheet with data
     for obj in data:
         row = [

@@ -203,7 +203,7 @@
                       <td class="table-cell">{{item.territory.zone_name}}</td>
                       <td class="table-cell">{{item.gift}}</td>
                       <td class="table-cell">
-                          <a class="button button--icon button--outline" href="{% url 'edit_gift_catalog' item.id %}"><i data-lucide="edit" class="text-primary"></i></a>
+                          <a class="button button--icon button--outline" href="{% url 'edit_gift_catalogs_2026' item.id %}"><i data-lucide="edit" class="text-primary"></i></a>
                           
                           <a class="button button--icon button--outline" onclick="confirmDelete('{{item.id}}','{{item.dr_name}}', '{{item.territory.territory}}')"><i data-lucide="trash" class="text-destructive"></i></a>
                       </td>
@@ -349,7 +349,7 @@
         currentParams.set('territory', territory);
         const nextParam = currentParams.toString();
         const redirectTo = nextParam? `?${nextParam}` : '?page=1&per_page=10';
-        window.location.href=`/gift/delete_gift/${instanceId}?territory=${territory}&next=${encodeURIComponent(redirectTo)}`
+        window.location.href=`/gift_catalogs_2/delete/${instanceId}?territory=${territory}&next=${encodeURIComponent(redirectTo)}`
       }
     })
   }
