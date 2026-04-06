@@ -36,7 +36,7 @@ def edit_gift_catalog(request, id):
                 return redirect('gift_catalogs_2026')
             return redirect('home')
         
-        return render(request, 'edit_gift_choice.html', {
+        return render(request, 'gift_catalogs_2_form.html', {
             'obj': obj,
             'count': count
         })
