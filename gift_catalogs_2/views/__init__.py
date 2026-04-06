@@ -1,1 +1,3 @@
 from .gift_catalogs_2026_form import gift_catalogs_2026_form
+from .edit_gift_catalogs_2026 import edit_gift_catalog
+from .delete_gift_catalogs_2026 import delete_gift_catalog
