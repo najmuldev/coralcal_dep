@@ -1,0 +1,112 @@
+{% extends 'base_header.html' %} 
+{% load static %} 
+
+{% block head_title %}Gift Choice Form | CoralCal Doctor Engagement Platform{% endblock %} 
+
+{% block extra_css %} 
+<style> 
+  .thumbnail { transition: transform 0.3s ease, border-color 0.3s ease; } 
+  .thumbnail.selected { border: 2px solid #3b82f6; transform: scale(1.05); } 
+</style> 
+{% endblock extra_css %} 
+
+{% block content %} 
+<div class="bg-background p-8 rounded-md border border-border shadow-sm max-w-2xl mx-auto"> 
+  <div class="card"> 
+    <div class="mb-6 flex justify-between gap-5 text-center"> 
+      <h2 class="text-2xl font-bold text-primary text-center"> Gift Choice Form </h2> 
+      <a href="{% url 'home' %}" class="button button--sm button--primary">Back</a> 
+    </div> 
+
+    {% if count >= 1 %} 
+    <div class="mb-4"> 
+      <p class="text-yellow-500">You have submitted a gift choice. You can edit it now.</p> 
+    </div> 
+    {% endif %} 
+
+    <div id="main-container" class="border border-border p-4 rounded-md"> 
+      <div class="form-container"> 
+        <div class="form-header"> 
+          <form id="uploadForm" method="post" class="flex flex-col gap-6" enctype="multipart/form-data"> 
+            {% csrf_token %} 
+            <!-- HIDDEN INPUT: Stores the actual voucher name string -->
+            <input type="hidden" id="selected_image" name="selected_image" value="{{ obj.gift|default:'' }}"> 
+
+            <div class="form-item"> 
+              <label class="label" for="dr_id">Doctor RPL ID</label> 
+              <input type="text" id="dr_id" name="dr_id" maxlength="10" class="input" required placeholder="Enter Doctor RPL ID" value="{{obj.dr_id|default:''}}" /> 
+            </div> 
+
+            <div class="form-item"> 
+              <label class="label" for="dr_name">Doctor Name</label> 
+              <input type="text" id="dr_name" name="dr_name" maxlength="100" class="input" required placeholder="Enter Doctor Name" value="{{obj.dr_name|default:''}}" /> 
+            </div> 
+
+            <div class="form-item"> 
+              <label class="label" for="gift">Select Gift Item</label> 
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-4"> 
+                
+                <!-- Apex -->
+                <div class="thumbnail cursor-pointer rounded-xl overflow-hidden border border-gray-300 {% if obj.gift == 'Apex' %}selected{% endif %}" onclick="selectThumbnail(this, 'Apex')"> 
+                  <p class="text-center text-xs text-gray-600 mt-2 p-2">Apex</p> 
+                  <img src="{% static 'images/apex.jpeg' %}" alt="Apex gift voucher" class="object-cover w-full p-2"> 
+                </div> 
+
+                <!-- Bata -->
+                <div class="thumbnail cursor-pointer rounded-xl overflow-hidden border border-gray-300 {% if obj.gift == 'Bata' %}selected{% endif %}" onclick="selectThumbnail(this, 'Bata')"> 
+                  <p class="text-center text-xs text-gray-600 mt-2 p-2">Bata</p> 
+                  <img src="{% static 'images/bata.jpeg' %}" alt="Bata gift voucher" class="object-cover w-full p-2"> 
+                </div> 
+
+                <!-- Infinity -->
+                <div class="thumbnail cursor-pointer rounded-xl overflow-hidden border border-gray-300 {% if obj.gift == 'Infinity' %}selected{% endif %}" onclick="selectThumbnail(this, 'Infinity')"> 
+                  <p class="text-center text-xs text-gray-600 mt-2 p-2">Infinity</p> 
+                  <img src="{% static 'images/infinity.jpeg' %}" alt="Infinity Gift Voucher" class="object-cover w-full p-2"> 
+                </div> 
+
+                <!-- Aarong -->
+                <div class="thumbnail cursor-pointer rounded-xl overflow-hidden border border-gray-300 {% if obj.gift == 'Aarong' %}selected{% endif %}" onclick="selectThumbnail(this, 'Aarong')"> 
+                  <p class="text-center text-xs text-gray-600 mt-2 p-2">Aarong</p> 
+                  <img src="{% static 'images/arong.jpeg' %}" alt="Aarong Gift Voucher" class="object-cover w-full p-2"> 
+                </div> 
+
+              </div> 
+            </div> 
+
+            <button type="submit" class="button button--md button--primary" onclick="submitForm(event)"> Submit </button> 
+          </form> 
+        </div> 
+      </div> 
+    </div> 
+
+  </div> 
+</div> 
+
+<script> 
+function selectThumbnail(element, giftValue) { 
+    // Remove selected state from all cards
+    document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('selected')); 
+    // Add selected state to clicked card
+    element.classList.add('selected'); 
+    // Update hidden field value with friendly text ('Apex', 'Bata', etc.)
+    document.getElementById('selected_image').value = giftValue; 
+} 
+
+function submitForm(event) { 
+    event.preventDefault(); 
+    const selectedImage = document.getElementById('selected_image').value; 
+    const drId = document.getElementById('dr_id').value.trim(); 
+    const drName = document.getElementById('dr_name').value.trim(); 
+
+    if (!drId || !drName) { 
+        alert('Please fill out all fields.'); 
+        return; 
+    } 
+    if (!selectedImage) { 
+        alert('Please select a gift image.'); 
+        return; 
+    } 
+    document.getElementById('uploadForm').submit(); 
+} 
+</script> 
+{% endblock content %}

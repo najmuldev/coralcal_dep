@@ -19,4 +19,5 @@ urlpatterns = [
     path('dac2/', include('doctors_ai_course2.urls')),
     path('boishakh-gift/', include('dr_boishakh_catalog.urls')),
     path('gift_catalogs_2/', include('gift_catalogs_2.urls')),
+    path('gvc/', include('gift_voucher_catalog.urls')),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

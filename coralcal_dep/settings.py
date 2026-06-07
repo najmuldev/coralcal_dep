@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'doctor_development',
     "dr_boishakh_catalog",
     'gift_catalogs_2',
+    'gift_voucher_catalog',
 ]
 
 MIDDLEWARE = [
