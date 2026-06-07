@@ -6,8 +6,14 @@ from gift_voucher_catalog.models import GiftVoucherCatalog
 def gift_voucher_catalog_26_form(request):
     # Safely get current territory
     user = request.user.username
+    
     try:
-        territory = Territory.objects.get(territory=user)
+        if user == 'admin':
+            obj_id = request.GET.get('id')
+            obj = GiftVoucherCatalog.objects.get(id=obj_id) 
+            territory = obj.territory_id
+        else:
+            territory = Territory.objects.get(territory=user)
     except Territory.DoesNotExist:
         messages.error(request, "Territory not found for this user.")
         return redirect('home')
@@ -34,7 +40,9 @@ def gift_voucher_catalog_26_form(request):
             )
             
             messages.success(request, f"Successfully submitted gift choice for {dr_name}.")
-            return redirect('gvc_form')
+            if user == 'admin':
+                return redirect('gvc_admin')
+            return redirect('home')
             
         except Exception as e:
             messages.error(request, f"Internal Server Error.")
@@ -50,5 +58,6 @@ def gift_voucher_catalog_26_form(request):
             
             return render(request, 'gvc_form.html', {'obj': obj, 'count': count})
         except Exception as e:
+            print(f"Error: {e}")
             messages.error(request, "An error occurred while loading the form.")
             return redirect('home')
