@@ -61,5 +61,6 @@ def territory_home(request):
         'doctor_development': {'label': "Doctor Development 1Q 26", 'url_name': 'dd_gift_choice', 'is_active': access_control_states['doctor_development']},
         'dr_boishakh_catalog': {'label': "Pohela Boishakh Calatog", 'url_name': 'view_boishakh_catalogs', 'is_active': access_control_states['dr_boishakh_catalog']},
         'gift_catalogs_2': {'label': "Gift Catalogs 2026", 'url_name': 'gift_catalogs_2026_form', 'is_active': access_control_states['gift_catalogs_2']},
+        'gift_voucher_catalog': {'label': "Gift Voucher Catalogue", 'url_name': 'gvc_form', 'is_active': access_control_states['gvc_26']},
     }
     return render(request, 'home.html', {'events': events})
