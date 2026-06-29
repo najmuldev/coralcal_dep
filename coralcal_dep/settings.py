@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "dr_boishakh_catalog",
     'gift_catalogs_2',
     'gift_voucher_catalog',
+    'nfc_card_info',
 ]
 
 MIDDLEWARE = [

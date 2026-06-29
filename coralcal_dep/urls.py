@@ -20,4 +20,5 @@ urlpatterns = [
     path('boishakh-gift/', include('dr_boishakh_catalog.urls')),
     path('gift_catalogs_2/', include('gift_catalogs_2.urls')),
     path('gvc/', include('gift_voucher_catalog.urls')),
+    path('nfc/', include('nfc_card_info.urls')),
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
