@@ -34,4 +34,6 @@ urlpatterns = [
     path('export_boishakh_catalogs', views.export_boishakh_catalogs, name='export_boishakh_catalogs'),
     path('gift_catalogs_2026/', view.gift_catalogs, name='gift_catalogs_2026'),
     path('export_gift_catalogs_2026/', view.export_gift_catalogs, name='export_gift_catalogs_2026'),
+    path('nfc_admin', view.nfc_admin_view, name='nfc_admin'),
+    path('nfc_export', view.nfc_export, name='nfc_export')
 ]

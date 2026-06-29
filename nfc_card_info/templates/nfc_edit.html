@@ -1,0 +1,181 @@
+{% extends 'base_header.html' %}
+{% load static %}
+{% block head_title %}Edit NFC Card Info | CoralCal Doctor Engagement Platform{% endblock %}
+
+{% block content %}
+<div class="bg-background p-8 rounded-md border border-border shadow-sm max-w-2xl mx-auto">
+  <div class="card">
+    <div class="mb-6 flex justify-between gap-5 text-center">
+      <h2 class="text-sm sm:text-base md:text-lg font-bold text-primary text-center">
+        Edit NFC Card Info Form
+      </h2>
+      <div class="flex gap-2">
+        <a href="{% url 'home' %}" class="button button--sm button--primary"><i data-lucide="arrow-left"></i> Back</a>
+        <!-- <a href="{% url 'do_history' %}" class="button button--sm button--primary"><i data-lucide="history"></i> History</a> -->
+      </div>
+    </div>
+
+    <div id="main-container" class="border border-border p-4 rounded-md">
+      <div class="form-container">
+        <form id="uploadForm" method="post" class="flex flex-col gap-6" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <!-- Doctor RPL ID -->
+          <div class="form-item">
+            <label class="label" for="dr_id">Doctor RPL ID</label>
+            <input type="text" id="dr_id" name="dr_id" maxlength="10" class="input" required
+              placeholder="Enter Doctor RPL ID" value="{{ obj.dr_rpl_id }}" />
+          </div>
+
+          <!-- Doctor Name -->
+          <div class="form-item">
+            <label class="label" for="dr_name">Doctor Name</label>
+            <input type="text" id="dr_name" name="dr_name" maxlength="100" class="input" required
+              placeholder="Enter Doctor Name" value="{{ obj.dr_name }}" />
+          </div>
+
+          <!-- Doctor Address -->
+          <div class="form-item">
+            <label class="label" for="degree">Degree</label>
+            <input type="text" id="degree" name="degree" maxlength="100" class="input" required
+              placeholder="Enter Doctor Degree" value="{{ obj.degree }}" />
+          </div>
+
+          <!-- Doctor Phone -->
+          <div class="form-item">
+            <label class="label" for="specialty">Specialty</label>
+            <input type="text" id="specialty" name="specialty" maxlength="100" class="input" required
+              placeholder="Enter Doctor Specialty" value="{{ obj.specialty }}" />
+          </div>
+
+          <div class="form-item">
+            <label class="label" for="designation">Designation</label>
+            <input type="text" id="designation" name="designation" maxlength="100" class="input" required
+              placeholder="Enter Doctor Designation" value="{{ obj.designation }}" />
+          </div>
+
+          <div class="form-item">
+            <label class="label" for="institute">Institute</label>
+            <input type="text" id="institute" name="institute" maxlength="100" class="input" required
+              placeholder="Enter Doctor Institute" value="{{ obj.institute }}" />
+          </div>
+
+          <button type="submit" class="button button--md button--primary" onclick="submitForm(event)">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Error Toast -->
+  <div id="flyingErrorToast"
+    class="hidden fixed top-6 right-6 bg-red-100 border border-red-300 text-red-800 px-4 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-300 ease-in-out">
+    <div class="flex items-center justify-between gap-4">
+      <p id="flyingErrorMessage" class="text-sm"></p>
+      <button onclick="closeFlyingError()" class="text-red-600 hover:text-red-800">
+        <i data-lucide="x-circle"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showFlyingError(message) {
+    const toast = document.getElementById('flyingErrorToast');
+    const text = document.getElementById('flyingErrorMessage');
+
+    text.textContent = message;
+    toast.classList.remove('hidden');
+    toast.classList.add('opacity-100');
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    setTimeout(() => {
+      closeFlyingError();
+    }, 3000);
+  }
+
+  function closeFlyingError() {
+    const toast = document.getElementById('flyingErrorToast');
+    toast.classList.add('hidden');
+  }
+
+  function addIndication(value = '') {
+    const wrapper = document.getElementById('indication-wrapper');
+
+    const container = document.createElement('div');
+    container.className = 'flex flex-col gap-1';
+
+    const textarea = document.createElement('textarea');
+    textarea.name = 'indications[]';
+    textarea.placeholder = 'Enter an indication';
+    textarea.className = 'input flex-1 resize-none';
+    textarea.maxLength = 255;
+    textarea.rows = 4;
+    textarea.value = value;
+
+    textarea.addEventListener('input', autoExpand);
+
+    const charCount = document.createElement('div');
+    charCount.className = 'text-xs text-gray-500 text-right';
+    charCount.textContent = `${textarea.value.length}/255`;
+
+    textarea.addEventListener('input', () => {
+      charCount.textContent = `${textarea.value.length}/255`;
+    });
+
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.innerHTML = `<i data-lucide="x-circle"></i>`;
+    removeBtn.className = 'text-red-500 hover:text-red-700 self-end';
+    removeBtn.onclick = () => {
+      if (wrapper.children.length > 1) {
+        wrapper.removeChild(container);
+      } else {
+        showFlyingError("At least one indication is required.");
+      }
+    };
+
+    container.appendChild(textarea);
+    container.appendChild(charCount);
+    container.appendChild(removeBtn);
+    wrapper.appendChild(container);
+
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+    autoExpand.call(textarea);
+  }
+
+  function autoExpand() {
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+  }
+
+  function submitForm(event) {
+    event.preventDefault();
+
+    const drId = document.getElementById('dr_id').value.trim();
+    const drName = document.getElementById('dr_name').value.trim();
+    const degree = document.getElementById('degree').value.trim();
+    const specialty = document.getElementById('specialty').value.trim();
+    const designation = document.getElementById('designation').value.trim();
+    const institute = document.getElementById('institute').value.trim();
+ 
+
+    if (!drId || !drName || !degree || !specialty || !designation || !institute) {
+      showFlyingError("Please fill out all required doctor fields.");
+      return;
+    }
+    
+
+    document.getElementById('uploadForm').submit();
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const existingIndications = {{ indications|safe }};
+    if (existingIndications.length > 0) {
+      existingIndications.forEach(text => addIndication(text));
+    } else {
+      addIndication();
+    }
+  });
+</script>
+{% endblock %}
