@@ -62,5 +62,6 @@ def territory_home(request):
         'dr_boishakh_catalog': {'label': "Pohela Boishakh Calatog", 'url_name': 'view_boishakh_catalogs', 'is_active': access_control_states['dr_boishakh_catalog']},
         'gift_catalogs_2': {'label': "Gift Catalogs 2026", 'url_name': 'gift_catalogs_2026_form', 'is_active': access_control_states['gift_catalogs_2']},
         'gift_voucher_catalog': {'label': "Gift Voucher Catalogue", 'url_name': 'gvc_form', 'is_active': access_control_states['gvc_26']},
+        'nfc_card_info': {'label': "NFC Card Info", 'url_name': 'nfc_form', 'is_active': access_control_states['nfc_card_info']},
     }
     return render(request, 'home.html', {'events': events})
