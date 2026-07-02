@@ -47,7 +47,7 @@ def nfc_form_view(request):
     except Territory.DoesNotExist():
         messages.error(request, 'Terriotry not found!')
     
-    if obj_count >= 5:
+    if obj_count >= 1:
         messages.success(request, 'You have already added five(5) doctor info.')
         return redirect('nfc_history')
     return render(request, 'nfc_form.html')
